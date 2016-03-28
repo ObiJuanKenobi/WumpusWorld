@@ -21,22 +21,4 @@ public class Keyboard extends GLFWKeyCallback {
 		return keys[keyCode];
 	}
 
-	public static boolean getKeyDown(int keyCode) {
-		if (getKey(keyCode) && !keysDown[keyCode]) {
-			keysDown[keyCode] = true;
-			return true;
-		} else {
-			return false;
-		}
-	}
-	
-	public static boolean getKeyUp(int keyCode) {
-		if (!getKey(keyCode) && keysDown[keyCode]) {
-			keysDown[keyCode] = false;
-			return true;
-		} else {
-			return false;
-		}
-	}
-
 }

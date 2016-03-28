@@ -24,23 +24,5 @@ public class Mouse extends GLFWMouseButtonCallback {
 	public static boolean getMouse(int mouseButton) {
 		return buttons[mouseButton];
 	}
-	
-	public static boolean getMouseDown(int mouseButton) {
-		if (getMouse(mouseButton) && !buttonsDown[mouseButton]) {
-			buttonsDown[mouseButton] = true;
-			return true;
-		} else {
-			return false;
-		}
-	}
-	
-	public static boolean getMouseUp(int mouseButton) {
-		if (!getMouse(mouseButton) && buttonsDown[mouseButton]) {
-			buttonsDown[mouseButton] = false;
-			return true;
-		} else {
-			return false;
-		}
-	}
 
 }

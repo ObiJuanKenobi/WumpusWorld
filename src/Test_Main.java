@@ -1,3 +1,8 @@
+import org.lwjgl.glfw.GLFW;
+
+import graphics.Keyboard;
+import graphics.Mouse;
+import graphics.MousePos;
 import graphics.Window;
 
 public class Test_Main {
@@ -10,6 +15,15 @@ public class Test_Main {
 		while (!Window.isCloseRequested()) {
 			Window.clear();
 			Window.render();
+			
+			if (Keyboard.getKey(GLFW.GLFW_KEY_SPACE)) {
+				//System.out.println("Space!");
+			}
+			if (Mouse.getMouse(Mouse.LEFT_CLICK)) {
+				//System.out.println("Left click!");
+			}
+			
+			System.out.println(MousePos.getMousePosition());
 		}
 		
 		Window.dispose();
