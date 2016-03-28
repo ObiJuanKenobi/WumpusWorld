@@ -138,5 +138,13 @@ public class Window {
 	public static String getTitle() {
 		return windowTitle;
 	}
+	
+	/**
+	 * Gets OpenGL version string
+	 * @return String containing OpenGL version and driver provider
+	 */
+	public static String getOpenGLVersion() {
+		return "OpenGL: " + GL11.glGetString(GL11.GL_VERSION);
+	}
 
 }

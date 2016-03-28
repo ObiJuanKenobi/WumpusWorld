@@ -6,6 +6,7 @@ public class Test_Main {
 		Window.createWindow(960, 540, "Wumpus World");
 		Window.setClearColor(50, 128, 128);
 		
+		System.out.println(Window.getOpenGLVersion());
 		while (!Window.isCloseRequested()) {
 			Window.clear();
 			Window.render();
