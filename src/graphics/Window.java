@@ -9,6 +9,11 @@ import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.system.MemoryUtil;
 
+/**
+ * Class for statically handling windows via GLFW
+ * @author Team Bits Please
+ *
+ */
 public class Window {
 	
 	// GLFW uses a numeric ID to keep track of its windows

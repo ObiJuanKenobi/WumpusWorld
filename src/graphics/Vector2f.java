@@ -1,22 +1,45 @@
 package graphics;
 
+/**
+ * Basic vector class to hold 2 floats
+ * @author Team Bits Please
+ *
+ */
 public class Vector2f {
 	
 	private float x, y;
 	
+	/**
+	 * Constructs a vector from given points
+	 * @param x X value of vector
+	 * @param y Y value of vector
+	 */
 	public Vector2f(float x, float y) {
 		this.x = x;
 		this.y = y;
 	}
 	
+	/**
+	 * Calculates length of vector
+	 * @return Length of vector
+	 */
 	public float length() {
 		return (float) Math.sqrt(x * x + y * y);
 	}
 	
+	/**
+	 * Calculate dot product of two vectors
+	 * @param r Other vector to be multiplied against
+	 * @return Dot product of the two vectors
+	 */
 	public float dot(Vector2f r) {
 		return x * r.x + y * r.y;
 	}
 	
+	/**
+	 * Provides a normalized version of this vector
+	 * @return Normalized vector
+	 */
 	public Vector2f normalize() {
 		float length = length();
 		
@@ -26,6 +49,11 @@ public class Vector2f {
 		return this;
 	}
 	
+	/**
+	 * Rotates this vector with respect to a given angle
+	 * @param angle Angle amount to be rotated
+	 * @return Rotated vector
+	 */
 	public Vector2f rotate(float angle) {
 		double rad = Math.toRadians(angle);
 		double cos = Math.cos(rad);
