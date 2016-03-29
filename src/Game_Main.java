@@ -1,6 +1,6 @@
 import graphics.Window;
 
-public class Game_Main implements Runnable {
+public class Game_Main {
 	
 	private boolean running = false;
 	

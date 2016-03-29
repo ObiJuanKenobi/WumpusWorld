@@ -16,7 +16,6 @@ public class Mouse extends GLFWMouseButtonCallback {
 	
 	public static final int NUM_BUTTONS = 16;
 	public static boolean[] buttons = new boolean[NUM_BUTTONS];
-	public static boolean[] buttonsDown = new boolean[NUM_BUTTONS];
 
 	/**
 	 * Called whenever GLFW detects a mouse click

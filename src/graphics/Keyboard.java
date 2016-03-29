@@ -12,7 +12,6 @@ public class Keyboard extends GLFWKeyCallback {
 
 	private static final int NUM_KEYCODES = 512;
 	public static boolean[] keys = new boolean[NUM_KEYCODES];
-	public static boolean[] keysDown = new boolean[NUM_KEYCODES];
 
 	/**
 	 * Called whenever GLFW detects a key press
