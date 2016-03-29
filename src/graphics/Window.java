@@ -75,7 +75,7 @@ public class Window {
 	 * Render the window
 	 */
 	public static void render() {
-		GLFW.glfwPollEvents();
+		GLFW.glfwPollEvents();	
 		GLFW.glfwSwapBuffers(window);
 	}
 	
