@@ -79,6 +79,8 @@ public class Game_Main {
 			System.out.println("X: " + tileX + " Y: " + tileY);
 		}
 		
+		
+		player.update();
 	}
 	
 	/**
