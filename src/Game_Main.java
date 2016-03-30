@@ -1,6 +1,8 @@
 import java.util.ArrayList;
 
 import graphics.GLPanel;
+import graphics.Mouse;
+import graphics.MousePos;
 import graphics.GLView.GLViewOnClickListener;
 import graphics.Vector2f;
 import graphics.Vector4f;
@@ -22,7 +24,7 @@ public class Game_Main {
 	}
 	
 	public Game_Main() {
-		Window.createWindow(900, 900, "Wumpus World - Game");
+		Window.createWindow(500, 500, "Wumpus World - Game");
 		Window.setClearColor(128, 128, 128);
 		System.out.println(Window.getOpenGLVersion());
 		
@@ -40,6 +42,14 @@ public class Game_Main {
 		if (Window.isCloseRequested()) {
 			running = false;
 		}
+		
+		if (Mouse.getMouse(Mouse.LEFT_CLICK)) {
+			Vector2f mouse = MousePos.getMousePosition();
+			int tileX = (int) mouse.getX() / 100;
+			int tileY = (int) mouse.getY() / 100;
+			System.out.println("X: " + tileX + " Y: " + tileY);
+		}
+		
 	}
 	
 	public void render() {
