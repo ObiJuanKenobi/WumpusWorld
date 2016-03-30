@@ -9,10 +9,11 @@ public class Tile {
 	private int Y;
 	private Objectives obj;
 	
-	public Tile(int xPosition, int yPosition, ArrayList<Percepts> percepts) {
+	public Tile(int xPosition, int yPosition, ArrayList<Percepts> percepts, Objectives obj) {
 		this.X = xPosition;
 		this.Y = yPosition;
 		this.percepts = percepts;
+		this.obj = obj;
 	}
 	
 	public Tile(int x, int y){
@@ -44,11 +45,12 @@ public class Tile {
 		return (Percepts[]) percepts.toArray();
 	}
 
+	public void addPrecept(Percepts p){
+		percepts.add(p);
+	}
+	
 	public void setPercepts(ArrayList<Percepts> percepts) {
 		this.percepts = percepts;
 	}
-
-
-	
 
 }
