@@ -90,9 +90,9 @@ public class WumpusWorld {
 
 	//like the map on the website
 	private void Generatemap() {
-		map = new Tile[4][4];
-		for (int i = 0; i < 4; i++) {
-			for (int j = 0; j < 4; j++) {
+		map = new Tile[5][5];
+		for (int i = 0; i < 5; i++) {
+			for (int j = 0; j < 5; j++) {
 				map[i][j] = new Tile(i, j);
 			}
 		}
@@ -105,21 +105,31 @@ public class WumpusWorld {
 
 	private void setUpPercepts() {
 		map[0][1].addPrecept(Percepts.Stench);
+		map[0][3].addPrecept(Percepts.Stench);
+		map[0][2].addPrecept(Percepts.Glitter);
+		map[0][4].addPrecept(Percepts.Breeze);
 		map[1][0].addPrecept(Percepts.Breeze);
+		map[1][1].addPrecept(Percepts.Glitter);
 		map[1][2].addPrecept(Percepts.Stench);
 		map[1][2].addPrecept(Percepts.Breeze);
+		map[1][3].addPrecept(Percepts.Breeze);
+		map[1][3].addPrecept(Percepts.Glitter);
 		map[2][1].addPrecept(Percepts.Breeze);
 		map[2][3].addPrecept(Percepts.Breeze);
+		map[2][4].addPrecept(Percepts.Breeze);
 		map[3][0].addPrecept(Percepts.Breeze);
 		map[3][2].addPrecept(Percepts.Breeze);
+		map[3][4].addPrecept(Percepts.Breeze);
+		map[4][3].addPrecept(Percepts.Breeze);
 	}
 
 	private void setUpObjectives() {
-		map[0][2].setObjective(Objectives.Pit);
 		map[0][2].setObjective(Objectives.Wumpus);
 		map[1][2].setObjective(Objectives.Gold);
+		map[1][4].setObjective(Objectives.Pit);
+		map[2][1].setObjective(Objectives.Pit);
 		map[2][2].setObjective(Objectives.Pit);
 		map[3][3].setObjective(Objectives.Pit);
-		map[1][3].setObjective(Objectives.Ladder);
+		map[4][1].setObjective(Objectives.Ladder);
 	}
 }
