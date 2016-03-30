@@ -7,19 +7,37 @@ public class Tile {
 	private ArrayList<Percepts> percepts = new ArrayList<Percepts>();
 	private int X;
 	private int Y;
-	private Point point;
+	private Objectives obj;
 	
 	public Tile(int xPosition, int yPosition, ArrayList<Percepts> percepts) {
-		point = new Point(xPosition, yPosition);
+		this.X = xPosition;
+		this.Y = yPosition;
 		this.percepts = percepts;
 	}
 	
 	public Tile(int x, int y){
-		point = new Point(x,y);
+		this.X = x;
+		this.Y = y;
+	}
+	
+	public Objectives getObjective(){
+		return obj;
+	}
+	
+	public void setObjective(Objectives obj){
+		this.obj = obj;
 	}
 	
 	public Point getLocation(){
-		return point.getLocation();
+		return new Point(X,Y);
+	}
+	
+	public int getY(){
+		return Y;
+	}
+	
+	public int getX(){
+		return X;
 	}
 
 	public Percepts[] getPercepts() {
