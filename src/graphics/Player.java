@@ -46,7 +46,7 @@ public class Player {
 	}
 	
 	/**
-	 * Sets the player's position to a specified coord
+	 * Sets the player's target position to a specified coord
 	 * @param x Desired X coord
 	 * @param y Desired Y coord
 	 */
@@ -55,6 +55,9 @@ public class Player {
 		targetPos.y = -(float) ((y / 2.0) - 1) * 0.8f;
 	}
 	
+	/**
+	 * Moves the player closer to it's desired position
+	 */
 	public void update() {
 		if (position.x < targetPos.x) {
 			position.x += moveSpeed;
