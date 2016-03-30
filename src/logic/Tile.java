@@ -14,6 +14,10 @@ public class Tile {
 		this.percepts = percepts;
 	}
 	
+	public Tile(int x, int y){
+		point = new Point(x,y);
+	}
+	
 	public Point getLocation(){
 		return point.getLocation();
 	}
