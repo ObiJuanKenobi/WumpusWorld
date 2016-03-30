@@ -2,6 +2,8 @@ package graphics;
 
 import java.util.ArrayList;
 
+import math.Vector2f;
+
 //A container that manages the drawing and translation of
 // all subviews
 public class GLPanel extends GLView {

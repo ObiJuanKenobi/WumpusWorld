@@ -2,6 +2,8 @@ package graphics;
 
 import org.lwjgl.glfw.GLFWCursorPosCallback;
 
+import math.Vector2f;
+
 /**
  * GLFW callback for handling mouse position
  * @author Team Bits Please

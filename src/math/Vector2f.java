@@ -1,4 +1,4 @@
-package graphics;
+package math;
 
 /**
  * Basic vector class to hold 2 floats

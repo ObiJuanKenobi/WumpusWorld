@@ -1,12 +1,12 @@
 import java.util.ArrayList;
 
 import graphics.GLPanel;
+//import graphics.GLView.GLViewOnClickListener;
 import graphics.Mouse;
 import graphics.MousePos;
-import graphics.GLView.GLViewOnClickListener;
-import graphics.Vector2f;
-import graphics.Vector4f;
 import graphics.Window;
+import math.Vector2f;
+import math.Vector4f;
 
 public class Game_Main {
 	
@@ -97,19 +97,19 @@ public class Game_Main {
 				panel.SetColor(new Vector4f(yIndex*.1f + xIndex*.1f, 
 						yIndex*.1f + xIndex*.1f, .0f, 1.0f));
 				
-				final int x = xIndex;
-				final int y = yIndex;
+				//final int x = xIndex;
+				//final int y = yIndex;
 				
 				//We may not even want to use a listener in this way or at all..
 				//Just a debugging listener for now
-				GLViewOnClickListener listener = new GLViewOnClickListener(){
-
-					@Override
-					public void onClick() {
-						System.out.println("" + x + ", " + y + " clicked");
-					}
-					
-				};
+//				GLViewOnClickListener listener = new GLViewOnClickListener(){
+//
+//					@Override
+//					public void onClick() {
+//						System.out.println("" + x + ", " + y + " clicked");
+//					}
+//					
+//				};
 				
 				gridPanels.add(panel);
 				

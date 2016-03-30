@@ -1,12 +1,14 @@
 package graphics;
 
 import java.nio.FloatBuffer;
-import java.util.ArrayList;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
+
+import math.Vector2f;
+import math.Vector4f;
 
 public class GLView {
 	

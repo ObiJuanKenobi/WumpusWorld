@@ -1,4 +1,4 @@
-package graphics;
+package math;
 
 //Just wanted to add something quick to
 // store RGBA colors, we can expand this later
