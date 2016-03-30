@@ -40,8 +40,8 @@ public class Player {
 		mesh = new VertexArray(vertices, indices, tcs);
 		texture = new Texture("res/sprites/brendan.png");
 		scale = new Vector3f(0.25f, 0.25f, 1);
-		position = new Vector3f(0, 0, 0);
-		targetPos = new Vector3f(0, 0, 0);
+		position = new Vector3f(-0.8f, 0.8f, 0);
+		targetPos = new Vector3f(-0.8f, -0.8f, 0);
 		setPosition(x, y);
 	}
 	
