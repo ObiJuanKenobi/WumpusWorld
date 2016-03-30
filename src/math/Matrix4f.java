@@ -40,6 +40,14 @@ public class Matrix4f {
 		return result;
 	}
 	
+	public static Matrix4f scale(Vector3f vector) {
+		Matrix4f result = identity();
+		result.elements[0 + 0 * 4] = vector.x;
+		result.elements[1 + 1 * 4] = vector.y;
+		result.elements[2 + 2 * 4] = vector.z;
+		return result;
+	}
+	
 	public static Matrix4f translate(Vector3f vector) {
 		Matrix4f result = identity();
 		result.elements[0 + 3 * 4] = vector.x;

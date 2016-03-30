@@ -1,16 +1,26 @@
 import java.util.ArrayList;
 
+import org.lwjgl.opengl.GL11;
+
 import graphics.GLPanel;
 //import graphics.GLView.GLViewOnClickListener;
 import graphics.Mouse;
 import graphics.MousePos;
+import graphics.Player;
+import graphics.Shader;
 import graphics.Window;
 import math.Vector2f;
 import math.Vector4f;
 
+/**
+ * Main runnable class for Wumpus World
+ * @author Team Bits Please
+ *
+ */
 public class Game_Main {
 	
 	private boolean running = false;
+	private Player player;
 	
 	//We will probably want to change this to a 2D array
 	// for more intuitive correspondence to the display
@@ -18,26 +28,44 @@ public class Game_Main {
 	
 	private static int boardSize = 5;
 	
+	/**
+	 * Entry point of program
+	 * @param args Standard command-line args
+	 */
 	public static void main(String[] args) {
-		Game_Main game = new Game_Main();
-		game.start();
+		new Game_Main().start();
 	}
 	
+	/**
+	 * Basic contructor that initializes resources
+	 */
 	public Game_Main() {
 		Window.createWindow(500, 500, "Wumpus World - Game");
 		Window.setClearColor(128, 128, 128);
 		System.out.println(Window.getOpenGLVersion());
 		
+		Shader.loadAll();
+		Shader.PLAYER.setUniform1i("tex", 1);
+		
+		player = new Player(0, 0);
 		initPanels(boardSize);
 	}
 
+	/**
+	 * Primary game loop that alternates between updating and rendering
+	 */
 	public void run() {
 		while(running) {
 			update();
 			render();
 		}
+		
+		Window.dispose();
 	}
 	
+	/**
+	 * Handles user input and updates game logic
+	 */
 	public void update() {
 		if (Window.isCloseRequested()) {
 			running = false;
@@ -47,28 +75,44 @@ public class Game_Main {
 			Vector2f mouse = MousePos.getMousePosition();
 			int tileX = (int) mouse.getX() / 100;
 			int tileY = (int) mouse.getY() / 100;
+			player.setPosition(tileX, tileY);
 			System.out.println("X: " + tileX + " Y: " + tileY);
 		}
 		
 	}
 	
+	/**
+	 * Renders background, player, and other sprites
+	 */
 	public void render() {
 		Window.clear();
 		
-		//TODO - Draw player
-		
 		for(GLPanel panel : gridPanels){
 			panel.Draw();
+		}
+		
+		player.render();
+		
+		int error = GL11.glGetError();
+		if (error != GL11.GL_NO_ERROR) {
+			System.out.println(error);
 		}
 				
 		Window.render();
 	}
 	
+	/**
+	 * Intuitive method to set running flag and enter run loop
+	 */
 	public void start() {
 		running = true;
 		run();
 	}
 	
+	/**
+	 * Creates dungeon tiles
+	 * @param dimension Size of dungeon, as in N x N
+	 */
 	private static void initPanels(int dimension){
 		//In NDC, width of board is 2 (goes from -1 to 1)
 		//  so divide into 5 equal sections (we can add padding later)

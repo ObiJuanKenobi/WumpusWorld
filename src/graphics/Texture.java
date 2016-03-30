@@ -10,15 +10,29 @@ import utils.BufferUtils;
 
 import static org.lwjgl.opengl.GL11.*;
 
+/**
+ * Wrapper class for handling OpenGL textures
+ * @author Team Bits Please
+ *
+ */
 public class Texture {
 	
 	private int width, height;
 	private int texture;
 	
+	/**
+	 * Constructs a new texture from a given file path
+	 * @param path Path to desired texture
+	 */
 	public Texture(String path) {
 		texture = load(path);
 	}
 	
+	/**
+	 * Loads this texture into OpenGL
+	 * @param path Path to desired texture
+	 * @return OpenGL ID for this texture
+	 */
 	private int load(String path) {
 		int[] pixels = null;
 		
@@ -52,11 +66,16 @@ public class Texture {
 		return result;
 	}
 	
+	/**
+	 * Binds this texture
+	 */
 	public void bind() {
 		glBindTexture(GL_TEXTURE_2D, texture);
-		
 	}
 	
+	/**
+	 * Unbinds this texture
+	 */
 	public void unbind() {
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}

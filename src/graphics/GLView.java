@@ -166,8 +166,8 @@ public class GLView {
         GL20.glUseProgram(0);
         
         //TODO need a deconstructor type method for deallocating all the VAOs
-        
-        
+        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+        mShader.disable();
 	}
 
 

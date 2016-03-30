@@ -7,16 +7,31 @@ import static org.lwjgl.opengl.GL30.*;
 
 import utils.BufferUtils;
 
+/**
+ * Wrapper class to handle meshes and textures
+ * @author Team Bits Please
+ *
+ */
 public class VertexArray {
 	
 	private int vao, vbo, ibo, tbo;
 	private int count;
 	
+	/**
+	 * Constructs a VertexArray with specified number of indices
+	 * @param count Number of indices
+	 */
 	public VertexArray(int count) {
 		this.count = count;
 		vao = glGenVertexArrays();
 	}
 	
+	/**
+	 * Constructs a VertexArray from given data
+	 * @param vertices Vertices of this mesh
+	 * @param indices Indices (drawing order) of this mesh
+	 * @param textureCoordinates Coordinates of texture sampler
+	 */
 	public VertexArray(float[] vertices, byte[] indices, float[] textureCoordinates) {
 		count = indices.length;
 		
@@ -44,6 +59,9 @@ public class VertexArray {
 		glBindVertexArray(0);
 	}
 	
+	/**
+	 * Binds this VertexArray
+	 */
 	public void bind() {
 		glBindVertexArray(vao);
 		if (ibo > 0) {
@@ -51,6 +69,9 @@ public class VertexArray {
 		}
 	}
 	
+	/**
+	 * Unbinds this VertexArray
+	 */
 	public void unbind() {
 		if (ibo > 0) {
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -58,6 +79,9 @@ public class VertexArray {
 		glBindVertexArray(0);
 	}
 	
+	/**
+	 * Draw this VertexArray
+	 */
 	public void draw() {
 		if (ibo > 0) {
 			glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_BYTE, 0);
@@ -66,9 +90,13 @@ public class VertexArray {
 		}
 	}
 	
+	/**
+	 * Binds and draws this vertex array
+	 */
 	public void render() {
 		bind();
 		draw();
+		unbind();
 	}
 
 }

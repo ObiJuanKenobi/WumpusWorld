@@ -13,7 +13,7 @@ public class GLViewShader {
 		"in vec2 position;\n" +
 		"void main()\n" +
 		"{\n" +
-		"gl_Position = vec4(position, 0.0f, 1.0f);\n" +
+		"gl_Position = vec4(position, 1.0f, 1.0f);\n" +
 		"}\0";
 
 	static String fragmentShaderSource = "#version 330 core\n" +
@@ -73,5 +73,9 @@ public class GLViewShader {
 	
 	public void Use(){
 		GL20.glUseProgram(this.programId);
+	}
+	
+	public void disable(){
+		GL20.glUseProgram(0);
 	}
 }

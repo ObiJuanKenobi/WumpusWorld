@@ -7,6 +7,7 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL13;
 import org.lwjgl.system.MemoryUtil;
 
 /**
@@ -69,6 +70,8 @@ public class Window {
 		GLFW.glfwSwapInterval(0);
 		GLFW.glfwShowWindow(window);
 		GL.createCapabilities();
+		GL11.glDepthFunc(GL11.GL_NEVER);
+		GL13.glActiveTexture(GL13.GL_TEXTURE1);
 	}
 	
 	/**
