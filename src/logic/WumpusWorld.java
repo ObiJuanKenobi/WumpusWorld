@@ -1,7 +1,15 @@
 package logic;
 
 import java.awt.Point;
-import java.util.ArrayList;
+/**
+ * @author Paul
+ * @author Juan
+ * TODO: Handle player movement validation (player doesn't run off map)
+ * TODO: Get Surrounding Percepts based on where the player is
+ * TODO: Handle Player & Objectives interaction 
+ * TODO: Handle Game Over
+ * TODO: Handle Game Won
+ */
 
 public class WumpusWorld {
 
@@ -10,7 +18,10 @@ public class WumpusWorld {
 	private int playerY;
 	private char playerOR;
 
-	// A hard coded map 4x4 map
+	/**
+	 * Creates a hardcoded 5x5 wumpus world map
+	 * Player starts at 0,0 and has an Orientation 'e'
+	 */
 	public WumpusWorld() {
 		Generatemap();
 	}
@@ -19,10 +30,20 @@ public class WumpusWorld {
 		// Random map generation
 	}
 
+	/**
+	 * Returns a Tile at the specified position
+	 * @param x
+	 * @param y
+	 * @return Tile[x][y]
+	 */
 	public Tile getTile(int x, int y) {
 		return map[x][y];
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public Tile[][] getmap() {
 		return map;
 	}
