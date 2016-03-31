@@ -41,13 +41,20 @@ public class WumpusWorld {
 	}
 
 	/**
-	 * 
-	 * @return
+	 * Returns the entire map
+	 * @return Tile[][]
 	 */
 	public Tile[][] getmap() {
 		return map;
 	}
-
+	
+	/**
+	 * Moves the player based on the direction
+	 * if the player orientation is different the direction
+	 * then change the orientation
+	 * @param direction
+	 * @return Boolean if the player moved or not
+	 */
 	public boolean move(int direction) {
 		switch (direction) {
 		// move up
