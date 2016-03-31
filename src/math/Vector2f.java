@@ -7,7 +7,15 @@ package math;
  */
 public class Vector2f {
 	
-	private float x, y;
+	public float x, y;
+	
+	/**
+	 * Constructs a vector with default values
+	 */
+	public Vector2f() {
+		x = 0;
+		y = 0;
+	}
 	
 	/**
 	 * Constructs a vector from given points

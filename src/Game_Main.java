@@ -9,6 +9,7 @@ import graphics.MousePos;
 import graphics.Player;
 import graphics.Shader;
 import graphics.Window;
+import logic.WumpusWorld;
 import math.Vector2f;
 import math.Vector4f;
 
@@ -18,8 +19,11 @@ import math.Vector4f;
  *
  */
 public class Game_Main {
+	private final int UPDATES_PER_SEC = 60;
+	private final int UPDATE_TIME_NS = 1000000000 / UPDATES_PER_SEC;
 	
 	private boolean running = false;
+	private WumpusWorld world;
 	private Player player;
 	
 	//We will probably want to change this to a 2D array
@@ -47,7 +51,8 @@ public class Game_Main {
 		Shader.loadAll();
 		Shader.PLAYER.setUniform1i("tex", 1);
 		
-		player = new Player(0, 0);
+		world = new WumpusWorld();
+		player = new Player(world.getPlayerPosition().x, world.getPlayerPosition().y);
 		initPanels(boardSize);
 	}
 
@@ -55,8 +60,18 @@ public class Game_Main {
 	 * Primary game loop that alternates between updating and rendering
 	 */
 	public void run() {
+		long startTime = System.nanoTime();
+		long elapsedTime = 0;
+
 		while(running) {
-			update();
+			elapsedTime = System.nanoTime() - startTime;
+			
+			if (elapsedTime >= UPDATE_TIME_NS) {
+				startTime = System.nanoTime();
+				elapsedTime = 0;
+				update();
+			}
+			
 			render();
 		}
 		
@@ -73,12 +88,11 @@ public class Game_Main {
 		
 		if (Mouse.getMouse(Mouse.LEFT_CLICK)) {
 			Vector2f mouse = MousePos.getMousePosition();
-			int tileX = (int) mouse.getX() / 100;
-			int tileY = (int) mouse.getY() / 100;
+			int tileX = (int) mouse.x / 100;
+			int tileY = (int) mouse.y / 100;
 			player.setPosition(tileX, tileY);
-			System.out.println("X: " + tileX + " Y: " + tileY);
+			//System.out.println("X: " + tileX + " Y: " + tileY);
 		}
-		
 		
 		player.update();
 	}

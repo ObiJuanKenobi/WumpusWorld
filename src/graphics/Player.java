@@ -1,8 +1,7 @@
 package graphics;
 
-import graphics.Texture;
-import graphics.VertexArray;
 import math.Matrix4f;
+import math.Vector2i;
 import math.Vector3f;
 
 /**
@@ -14,10 +13,11 @@ public class Player {
 
 	private float SIZE = 1.0f;
 	private float depth = -1.0f;
-	private float moveSpeed = 0.001f;
+	private float moveSpeed = 0.1f;
+	
+	private Vector2i targetPos;
 	
 	private Vector3f position;
-	private Vector3f targetPos;
 	private Vector3f scale;
 	private VertexArray mesh;
 	private Texture texture;
@@ -40,8 +40,8 @@ public class Player {
 		mesh = new VertexArray(vertices, indices, tcs);
 		texture = new Texture("res/sprites/brendan.png");
 		scale = new Vector3f(0.25f, 0.25f, 1);
-		position = new Vector3f(-0.8f, 0.8f, 0);
-		targetPos = new Vector3f(-0.8f, -0.8f, 0);
+		position = new Vector3f(0, 0, 0);
+		targetPos = new Vector2i(0, 0);
 		setPosition(x, y);
 	}
 	
@@ -51,8 +51,18 @@ public class Player {
 	 * @param y Desired Y coord
 	 */
 	public void setPosition(int x, int y) {
-		targetPos.x = (float) ((x / 2.0) - 1) * 0.8f;
-		targetPos.y = -(float) ((y / 2.0) - 1) * 0.8f;
+		targetPos.x = x;
+		targetPos.y = y;
+		System.out.println(targetPos);
+		System.out.println(getGLCoords());
+	}
+	
+	public Vector3f getGLCoords() {
+		Vector3f result = new Vector3f();
+		result.x = ((float)((position.x / 2.0) - 1) * 0.8f);
+		result.y = -((float)((position.y / 2.0) - 1) * 0.8f);
+		result.z = 0;
+		return result;
 	}
 	
 	/**
@@ -74,6 +84,16 @@ public class Player {
 		if (position.y > targetPos.y) {
 			position.y -= moveSpeed;
 		}
+		
+		// these two checks accommodate for precision error
+		// when the moveSpeed is high enough
+		if (Math.abs(targetPos.x - position.x) < moveSpeed) {
+			position.x = targetPos.x;
+		}
+		
+		if (Math.abs(targetPos.y - position.y) < moveSpeed) {
+			position.y = targetPos.y;
+		}
 	}
 	
 	/**
@@ -81,7 +101,7 @@ public class Player {
 	 */
 	public void render() {
 		Shader.PLAYER.enable();
-		Shader.PLAYER.setUniformMat4f("ml_matrix", Matrix4f.translate(position).multiply(Matrix4f.scale(scale)));
+		Shader.PLAYER.setUniformMat4f("ml_matrix", Matrix4f.translate(getGLCoords()).multiply(Matrix4f.scale(scale)));
 		texture.bind();
 		mesh.render();
 		Shader.PLAYER.disable();

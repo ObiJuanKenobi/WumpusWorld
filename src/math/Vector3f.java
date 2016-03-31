@@ -15,5 +15,9 @@ public class Vector3f {
 		this.y = y;
 		this.z = z;
 	}
+	
+	public String toString() {
+		return "X: " + x + " Y: " + y + " Z: " + z;
+	}
 
 }
