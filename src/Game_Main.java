@@ -90,7 +90,24 @@ public class Game_Main {
 			Vector2f mouse = MousePos.getMousePosition();
 			int tileX = (int) mouse.x / 100;
 			int tileY = (int) mouse.y / 100;
-			player.setPosition(tileX, tileY);
+			
+			if (tileX > world.getPlayerX()) {
+				world.move(1);
+			}
+			
+			if (tileX < world.getPlayerX()) {
+				world.move(3);
+			}
+			
+			if (tileY < world.getPlayerY()) {
+				world.move(2);
+			}
+			
+			if (tileY > world.getPlayerY()) {
+				world.move(0);
+			}
+			//world.move(0);
+			player.setPosition(world.getPlayerX(), world.getPlayerY());
 			//System.out.println("X: " + tileX + " Y: " + tileY);
 		}
 		
