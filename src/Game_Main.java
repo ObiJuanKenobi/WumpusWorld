@@ -45,7 +45,7 @@ public class Game_Main {
 	 */
 	public Game_Main() {
 		Window.createWindow(500, 500, "Wumpus World - Game");
-		Window.setClearColor(128, 128, 128);
+		Window.setClearColor(50, 50, 50);
 		System.out.println(Window.getOpenGLVersion());
 		
 		Shader.loadAll();
@@ -120,8 +120,12 @@ public class Game_Main {
 	public void render() {
 		Window.clear();
 		
-		for(GLPanel panel : gridPanels){
-			panel.Draw();
+		for(int y = 0; y < boardSize; y++) {
+			for (int x = 0; x < boardSize; x++) {
+				if (world.getTile(x, y).isVisible()) {
+					gridPanels.get((x + y * boardSize)).Draw();
+				}
+			}
 		}
 		
 		player.render();
@@ -158,7 +162,6 @@ public class Game_Main {
 		float xStart = -1.0f;
 		
 		for(int yIndex = 0; yIndex < dimension; yIndex++){
-			
 			float yPt = yStart + yIndex*panelHeight;
 			
 			for(int xIndex = 0; xIndex < dimension; xIndex++){
@@ -174,52 +177,9 @@ public class Game_Main {
 				panel.SetColor(new Vector4f(yIndex*.1f + xIndex*.1f, 
 						yIndex*.1f + xIndex*.1f, .0f, 1.0f));
 				
-				//final int x = xIndex;
-				//final int y = yIndex;
-				
-				//We may not even want to use a listener in this way or at all..
-				//Just a debugging listener for now
-//				GLViewOnClickListener listener = new GLViewOnClickListener(){
-//
-//					@Override
-//					public void onClick() {
-//						System.out.println("" + x + ", " + y + " clicked");
-//					}
-//					
-//				};
-				
 				gridPanels.add(panel);
 				
 			}
 		}
 	}
-	
-	//Mouse callbacks:
-	/*
-	 
-	 void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
-	{
-		mouseX = xpos / WIDTH;
-		mouseX = ((mouseX - .5f) / .5f);
-	
-		mouseY = ypos / HEIGHT;
-		mouseY = ((mouseY - .5f) / -.5f);
-	
-	
-	}
-	
-	void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
-	{
-		if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-			glm::vec3 mouseClick = glm::vec3(mouseX, mouseY, 0.0f);
-			for (std::vector<GLView*>::iterator it = views.begin(); it != views.end(); it++) {
-				if ((*it)->CheckClicked(mouseClick)) {
-					(*it)->OnClick(mouseClick);
-				}
-			}
-	
-		}
-	}
-	 */
-
 }

@@ -62,6 +62,7 @@ public class WumpusWorld {
 			if (playerOR == 'n') {
 				// actually move
 				playerY++;
+				map[playerX][playerY].setVisible();
 				return true;
 			} else {
 				// set orientation
@@ -72,6 +73,7 @@ public class WumpusWorld {
 		case 1:
 			if (playerOR == 'e') {
 				playerX++;
+				map[playerX][playerY].setVisible();
 				return true;
 			} else {
 				playerOR = 'e';
@@ -81,6 +83,7 @@ public class WumpusWorld {
 		case 2:
 			if (playerOR == 's') {
 				playerY--;
+				map[playerX][playerY].setVisible();
 				return true;
 			} else {
 				playerOR = 's';
@@ -90,6 +93,7 @@ public class WumpusWorld {
 		case 3:
 			if (playerOR == 'w') {
 				playerX--;
+				map[playerX][playerY].setVisible();
 				return true;
 			} else {
 				playerOR = 'w';
@@ -128,6 +132,7 @@ public class WumpusWorld {
 		setUpPercepts();
 		playerX = 0;
 		playerY = 0;
+		map[playerX][playerY].setVisible();
 		playerOR = 'e';
 	}
 
