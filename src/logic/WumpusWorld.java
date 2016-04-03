@@ -23,9 +23,9 @@ public class WumpusWorld {
 	/**
 	 * Creates a hardcoded 5x5 wumpus world map
 	 * Player starts at 0,0 and has an Orientation 'e'
+	isGameOver = false;
 	 */
 	public WumpusWorld() {
-		isGameOver = false;
 		Generatemap();
 	}
 

@@ -58,7 +58,7 @@ public class Window {
 		
 		// This tells the window to open in the middle of the screen
 		GLFWVidMode vidmode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
-		GLFW.glfwSetWindowPos(window, (vidmode.width() - width) / 2, (vidmode.height() - height) / 2);
+		GLFW.glfwSetWindowPos(window, (vidmode.width() - width) / 2, (vidmode.height() /*- height*/) / 2);
 		
 		// Set input callbacks
 		GLFW.glfwSetKeyCallback(window, keyboard);

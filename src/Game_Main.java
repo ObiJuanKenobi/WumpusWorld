@@ -31,6 +31,8 @@ public class Game_Main {
 	private Player player;
 	
 	private ArrayList<GLPanel> gridPanels = new ArrayList<GLPanel>();
+	private int windowWidth = 1200, windowHeight = 1200;
+	private float panelWidth, panelHeight;
 	
 	private static int boardSize = 5;
 	
@@ -46,7 +48,7 @@ public class Game_Main {
 	 * Basic contructor that initializes resources
 	 */
 	public Game_Main() {
-		Window.createWindow(500, 500, "Wumpus World - Game");
+		Window.createWindow(windowWidth, windowHeight, "Wumpus World - Game");
 		Window.setClearColor(50, 50, 50);
 		System.out.println(Window.getOpenGLVersion());
 		
@@ -106,8 +108,8 @@ public class Game_Main {
 			
 			// calculate tile of click
 			Vector2f mouse = MousePos.getMousePosition();
-			int tileX = (int) mouse.x / 100;
-			int tileY = (int) mouse.y / 100;
+			int tileX = (int) (mouse.x / panelWidth);
+			int tileY = (int) (mouse.y / panelHeight);
 			
 			// handle player movement
 			if (tileX > world.getPlayerX()) {
@@ -150,21 +152,6 @@ public class Game_Main {
 		if(!currentPanel.isDiscovered()){
 			currentPanel.discover();
 			
-			for(Percepts percept : percepts){
-				
-				if(percept == Percepts.Glitter) {
-					System.out.println("You see a faint glittering.");
-				}
-				if(percept == Percepts.Breeze) {
-					System.out.println("You hear a strong breeze.");
-				}
-				if(percept == Percepts.Stench) {
-					System.out.println("You smell a powerful stench.");
-				}
-				
-				currentPanel.AddView(new GLIcon(.2f * gridPanels.get(panelIndex).GetWidth(), .2f * gridPanels.get(panelIndex).GetHeight(), percept));
-			}
-			
 			if(objective != null){
 				
 				if (objective == Objectives.Gold) {
@@ -181,6 +168,21 @@ public class Game_Main {
 				}
 				
 				currentPanel.AddView(new GLIcon(.8f * gridPanels.get(panelIndex).GetWidth(), .8f * gridPanels.get(panelIndex).GetHeight(), objective));
+			}
+			
+			for(Percepts percept : percepts){
+				
+				if(percept == Percepts.Glitter) {
+					System.out.println("You see a faint glittering.");
+				}
+				if(percept == Percepts.Breeze) {
+					System.out.println("You hear a strong breeze.");
+				}
+				if(percept == Percepts.Stench) {
+					System.out.println("You smell a powerful stench.");
+				}
+				
+				currentPanel.AddView(new GLIcon(.2f * gridPanels.get(panelIndex).GetWidth(), .2f * gridPanels.get(panelIndex).GetHeight(), percept));
 			}
 		}
 		
@@ -236,10 +238,10 @@ public class Game_Main {
 	private void initPanels(int dimension){
 		//In NDC, width of board is 2 (goes from -1 to 1)
 		//  so divide into 5 equal sections (we can add padding later)
-		float panelWidth = 2.0f / (float)dimension;
+		panelWidth = 2.0f / (float)dimension;
 		
 		//Same for height:
-		float panelHeight = 2.0f / (float)dimension;
+		panelHeight = 2.0f / (float)dimension;
 		
 		float yStart = 1.0f - panelHeight;
 		float xStart = -1.0f;
@@ -270,5 +272,8 @@ public class Game_Main {
 		
 		//Create an icon now so all textures can be generated before gameplay begins
 		GLIcon icon = new GLIcon(.1f, .1f, Percepts.Breeze);
+		
+		panelWidth = windowWidth / dimension;
+		panelHeight = windowHeight / dimension;
 	}
 }
