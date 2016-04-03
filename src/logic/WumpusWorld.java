@@ -60,8 +60,11 @@ public class WumpusWorld {
 		case 0:
 			if (playerOR == 's') {
 				// actually move
-				playerY++;
-				map[playerX][playerY].setVisible();
+				if(isValidMove(0)){
+					playerY++;
+					map[playerX][playerY].setVisible();
+				}
+				
 				return true;
 			} else {
 				// set orientation
@@ -71,8 +74,11 @@ public class WumpusWorld {
 		// move right
 		case 1:
 			if (playerOR == 'e') {
-				playerX++;
-				map[playerX][playerY].setVisible();
+				if(isValidMove(1)){
+					playerX++;
+					map[playerX][playerY].setVisible();
+				}
+				
 				return true;
 			} else {
 				playerOR = 'e';
@@ -81,8 +87,11 @@ public class WumpusWorld {
 		// move down
 		case 2:
 			if (playerOR == 'n') {
-				playerY--;
-				map[playerX][playerY].setVisible();
+				if(isValidMove(2)){
+					playerY--;
+					map[playerX][playerY].setVisible();
+				}
+				
 				return true;
 			} else {
 				playerOR = 'n';
@@ -91,16 +100,20 @@ public class WumpusWorld {
 		// move left
 		case 3:
 			if (playerOR == 'w') {
-				playerX--;
-				map[playerX][playerY].setVisible();
+				if(isValidMove(3)){
+					playerX--;
+					map[playerX][playerY].setVisible();
+				}
+				
 				return true;
 			} else {
 				playerOR = 'w';
 				return false;
 			}
+		default:
+			return false;
 		}
-		// should never get to this point
-		return false;
+		
 	}
 
 	public Point getPlayerPosition() {
@@ -156,6 +169,33 @@ public class WumpusWorld {
 		}
 		
 		return percepts;
+	}
+	
+	public boolean isValidMove(int move){
+		switch (move){
+		case 0:
+			if(playerY + 1 <= 4){
+				return true;
+			}
+			return false;
+		case 1:
+			if(playerX + 1 <= 4){
+				return true;
+			}
+			return false;
+		case 2: 
+			if(playerY - 1 >= 0){
+				return true;
+			}
+			return false;
+		case 3: 
+			if(playerX - 1 >= 0){
+				return true;
+			}
+			return false;
+		default:
+			return false;
+		}
 	}
 	
 	public boolean isGameOver() {
