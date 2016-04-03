@@ -63,9 +63,10 @@ public class WumpusWorld {
 				if(isValidMove(0)){
 					playerY++;
 					map[playerX][playerY].setVisible();
+					return true;
 				}
 				
-				return true;
+				return false;
 			} else {
 				// set orientation
 				playerOR = 's';
@@ -77,9 +78,10 @@ public class WumpusWorld {
 				if(isValidMove(1)){
 					playerX++;
 					map[playerX][playerY].setVisible();
+					return true;
 				}
 				
-				return true;
+				return false;
 			} else {
 				playerOR = 'e';
 				return false;
@@ -90,9 +92,10 @@ public class WumpusWorld {
 				if(isValidMove(2)){
 					playerY--;
 					map[playerX][playerY].setVisible();
+					return true;
 				}
 				
-				return true;
+				return false;
 			} else {
 				playerOR = 'n';
 				return false;
@@ -103,9 +106,10 @@ public class WumpusWorld {
 				if(isValidMove(3)){
 					playerX--;
 					map[playerX][playerY].setVisible();
+					return false;
 				}
 				
-				return true;
+				return false;
 			} else {
 				playerOR = 'w';
 				return false;
