@@ -122,7 +122,7 @@ public class Game_Main {
 			if(percepts.contains(Percepts.Glitter)) {
 				System.out.println("You see a faint glittering.");
 			}
-			if(percepts.contains(Percepts.Glitter)) {
+			if(percepts.contains(Percepts.Breeze)) {
 				System.out.println("You hear a strong breeze.");
 			}
 			if(percepts.contains(Percepts.Stench)) {

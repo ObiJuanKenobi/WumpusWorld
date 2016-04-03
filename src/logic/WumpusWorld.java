@@ -119,6 +119,10 @@ public class WumpusWorld {
 		return playerOR;
 	}
 	
+	/**
+	 * Checks surrounding tiles for objectives
+	 * @return ArrayList of the perceived objectives
+	 */
 	public ArrayList<Percepts> getPerceptions() {
 		ArrayList<Percepts> percepts = new ArrayList<Percepts>();
 		
@@ -132,10 +136,6 @@ public class WumpusWorld {
 				}
 				
 				if (Math.abs(x) == Math.abs(y)) {
-					continue;
-				}
-				
-				if (x == 0 && y == 0) {
 					continue;
 				}
 				
