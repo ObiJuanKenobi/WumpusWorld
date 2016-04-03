@@ -3,12 +3,14 @@ import java.util.ArrayList;
 import org.lwjgl.opengl.GL11;
 
 import graphics.GLPanel;
-//import graphics.GLView.GLViewOnClickListener;
 import graphics.Mouse;
 import graphics.MousePos;
 import graphics.Player;
 import graphics.Shader;
 import graphics.Window;
+import logic.Objectives;
+import logic.Percepts;
+import logic.Tile;
 import logic.WumpusWorld;
 import math.Vector2f;
 import math.Vector4f;
@@ -26,9 +28,7 @@ public class Game_Main {
 	private WumpusWorld world;
 	private Player player;
 	
-	//We will probably want to change this to a 2D array
-	// for more intuitive correspondence to the display
-	private static ArrayList<GLPanel> gridPanels = new ArrayList<GLPanel>();
+	private ArrayList<GLPanel> gridPanels = new ArrayList<GLPanel>();
 	
 	private static int boardSize = 5;
 	
@@ -89,10 +89,13 @@ public class Game_Main {
 		}
 		
 		if (Mouse.getMouse(Mouse.LEFT_CLICK)) {
+			
+			// calculate tile of click
 			Vector2f mouse = MousePos.getMousePosition();
 			int tileX = (int) mouse.x / 100;
 			int tileY = (int) mouse.y / 100;
 			
+			// handle player movement
 			if (tileX > world.getPlayerX()) {
 				world.move(1);
 			}
@@ -109,9 +112,40 @@ public class Game_Main {
 				world.move(0);
 			}
 			
+			// print player's status
 			player.setPosition(world.getPlayerX(), world.getPlayerY());
-			System.out.println("Moved to: " + world.getPlayerX() + ", " + world.getPlayerY());
+			System.out.println("Location: " + world.getPlayerX() + ", " + world.getPlayerY());
+			System.out.println("Direction: " + world.getPlayerOrientation());
 			
+			// check surroundings
+			ArrayList<Percepts> percepts = world.getPerceptions();
+			if(percepts.contains(Percepts.Glitter)) {
+				System.out.println("You see a faint glittering.");
+			}
+			if(percepts.contains(Percepts.Glitter)) {
+				System.out.println("You hear a strong breeze.");
+			}
+			if(percepts.contains(Percepts.Stench)) {
+				System.out.println("You smell a powerful stench.");
+			}
+			
+			// check current tile
+			Tile current = world.getTile(world.getPlayerX(), world.getPlayerY());
+			if (current.getObjective() == Objectives.Gold) {
+				System.out.println("You have found the gold!");
+				running = false;
+			}
+			if (current.getObjective() == Objectives.Pit) {
+				System.out.println("You fell into a pit and died!");
+				running = false;
+			}
+			if (current.getObjective() == Objectives.Wumpus) {
+				System.out.println("You have been eaten by the Wumpus!");
+				running = false;
+			}
+			System.out.println();
+			
+			// wait shortly to prevent click spamming
 			try {
 				Thread.sleep(200);
 			} catch (InterruptedException e) {
@@ -163,7 +197,7 @@ public class Game_Main {
 	 * Creates dungeon tiles
 	 * @param dimension Size of dungeon, as in N x N
 	 */
-	private static void initPanels(int dimension){
+	private void initPanels(int dimension){
 		//In NDC, width of board is 2 (goes from -1 to 1)
 		//  so divide into 5 equal sections (we can add padding later)
 		float panelWidth = 2.0f / (float)dimension;

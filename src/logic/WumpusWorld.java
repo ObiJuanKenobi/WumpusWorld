@@ -1,6 +1,7 @@
 package logic;
 
 import java.awt.Point;
+import java.util.ArrayList;
 /**
  * @author Paul
  * @author Juan
@@ -57,28 +58,46 @@ public class WumpusWorld {
 		switch (direction) {
 		// move up
 		case 0:
-			playerY++;
-			map[playerX][playerY].setVisible();
-			return true;
-
+			if (playerOR == 's') {
+				// actually move
+				playerY++;
+				map[playerX][playerY].setVisible();
+				return true;
+			} else {
+				// set orientation
+				playerOR = 's';
+				return false;
+			}
 		// move right
 		case 1:
-			playerX++;
-			map[playerX][playerY].setVisible();
-			return true;
-
+			if (playerOR == 'e') {
+				playerX++;
+				map[playerX][playerY].setVisible();
+				return true;
+			} else {
+				playerOR = 'e';
+				return false;
+			}
 		// move down
 		case 2:
-			playerY--;
-			map[playerX][playerY].setVisible();
-			return true;
-
+			if (playerOR == 'n') {
+				playerY--;
+				map[playerX][playerY].setVisible();
+				return true;
+			} else {
+				playerOR = 'n';
+				return false;
+			}
 		// move left
 		case 3:
-			playerX--;
-			map[playerX][playerY].setVisible();
-			return true;
-			
+			if (playerOR == 'w') {
+				playerX--;
+				map[playerX][playerY].setVisible();
+				return true;
+			} else {
+				playerOR = 'w';
+				return false;
+			}
 		}
 		// should never get to this point
 		return false;
@@ -98,6 +117,45 @@ public class WumpusWorld {
 
 	public char getPlayerOrientation() {
 		return playerOR;
+	}
+	
+	public ArrayList<Percepts> getPerceptions() {
+		ArrayList<Percepts> percepts = new ArrayList<Percepts>();
+		
+		for (int y = -1; y <= 1; y++) {
+			for (int x = -1; x <= 1; x++) {
+				int px = playerX + x;
+				int py = playerY + y;
+				
+				if (px < 0 || py < 0 || px > 4 || py > 4) {
+					continue;
+				}
+				
+				if (Math.abs(x) == Math.abs(y)) {
+					continue;
+				}
+				
+				if (x == 0 && y == 0) {
+					continue;
+				}
+				
+				Objectives obj = getTile(px, py).getObjective();
+				
+				if (obj == Objectives.Gold) {
+					percepts.add(Percepts.Glitter);
+				}
+				
+				if (obj == Objectives.Wumpus) {
+					percepts.add(Percepts.Stench);
+				}
+				
+				if (obj == Objectives.Pit) {
+					percepts.add(Percepts.Breeze);
+				}
+			}
+		}
+		
+		return percepts;
 	}
 	
 	public boolean isGameOver() {
@@ -147,6 +205,5 @@ public class WumpusWorld {
 		map[2][1].setObjective(Objectives.Pit);
 		map[2][2].setObjective(Objectives.Pit);
 		map[3][3].setObjective(Objectives.Pit);
-		map[4][1].setObjective(Objectives.Ladder);
 	}
 }
