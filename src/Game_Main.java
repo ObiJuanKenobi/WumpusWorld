@@ -123,7 +123,12 @@ public class Game_Main {
 		for(int y = 0; y < boardSize; y++) {
 			for (int x = 0; x < boardSize; x++) {
 				if (world.getTile(x, y).isVisible()) {
-					gridPanels.get((x + y * boardSize)).Draw();
+					int offset = x + y * boardSize;
+					
+					// this calculation fixes the indexing bug
+					offset += (20 - (y * boardSize * 2));
+					
+					gridPanels.get((offset)).Draw();
 				}
 			}
 		}
