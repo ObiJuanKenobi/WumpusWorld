@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 public class Tile {
 	private ArrayList<Percepts> percepts = new ArrayList<Percepts>();
+	private boolean isVisible;
 	private int X;
 	private int Y;
 	private Objectives obj;
@@ -14,6 +15,7 @@ public class Tile {
 		this.Y = yPosition;
 		this.percepts = percepts;
 		this.obj = obj;
+		isVisible = false;
 	}
 	
 	public Tile(int x, int y){
@@ -27,6 +29,14 @@ public class Tile {
 	
 	public void setObjective(Objectives obj){
 		this.obj = obj;
+	}
+	
+	public boolean isVisible() {
+		return isVisible;
+	}
+	
+	public void setVisible() {
+		isVisible = true;
 	}
 	
 	public Point getLocation(){

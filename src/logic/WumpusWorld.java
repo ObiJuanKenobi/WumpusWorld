@@ -1,6 +1,7 @@
 package logic;
 
 import java.awt.Point;
+import java.util.ArrayList;
 /**
  * @author Paul
  * @author Juan
@@ -17,17 +18,15 @@ public class WumpusWorld {
 	private int playerX;
 	private int playerY;
 	private char playerOR;
+	private boolean isGameOver;
 
 	/**
 	 * Creates a hardcoded 5x5 wumpus world map
 	 * Player starts at 0,0 and has an Orientation 'e'
 	 */
 	public WumpusWorld() {
+		isGameOver = false;
 		Generatemap();
-	}
-
-	public WumpusWorld(int size) {
-		// Random map generation
 	}
 
 	/**
@@ -59,37 +58,41 @@ public class WumpusWorld {
 		switch (direction) {
 		// move up
 		case 0:
-			if (playerOR == 'n') {
+			if (playerOR == 's') {
 				// actually move
 				playerY++;
+				map[playerX][playerY].setVisible();
 				return true;
 			} else {
 				// set orientation
-				playerOR = 'n';
+				playerOR = 's';
 				return false;
 			}
-			// move right
+		// move right
 		case 1:
 			if (playerOR == 'e') {
 				playerX++;
+				map[playerX][playerY].setVisible();
 				return true;
 			} else {
 				playerOR = 'e';
 				return false;
 			}
-			// move down
+		// move down
 		case 2:
-			if (playerOR == 's') {
+			if (playerOR == 'n') {
 				playerY--;
+				map[playerX][playerY].setVisible();
 				return true;
 			} else {
-				playerOR = 's';
+				playerOR = 'n';
 				return false;
 			}
-			// move left
+		// move left
 		case 3:
 			if (playerOR == 'w') {
 				playerX--;
+				map[playerX][playerY].setVisible();
 				return true;
 			} else {
 				playerOR = 'w';
@@ -115,6 +118,49 @@ public class WumpusWorld {
 	public char getPlayerOrientation() {
 		return playerOR;
 	}
+	
+	/**
+	 * Checks surrounding tiles for objectives
+	 * @return ArrayList of the perceived objectives
+	 */
+	public ArrayList<Percepts> getPerceptions() {
+		ArrayList<Percepts> percepts = new ArrayList<Percepts>();
+		
+		for (int y = -1; y <= 1; y++) {
+			for (int x = -1; x <= 1; x++) {
+				int px = playerX + x;
+				int py = playerY + y;
+				
+				if (px < 0 || py < 0 || px > 4 || py > 4) {
+					continue;
+				}
+				
+				if (Math.abs(x) == Math.abs(y)) {
+					continue;
+				}
+				
+				Objectives obj = getTile(px, py).getObjective();
+				
+				if (obj == Objectives.Gold) {
+					percepts.add(Percepts.Glitter);
+				}
+				
+				if (obj == Objectives.Wumpus) {
+					percepts.add(Percepts.Stench);
+				}
+				
+				if (obj == Objectives.Pit) {
+					percepts.add(Percepts.Breeze);
+				}
+			}
+		}
+		
+		return percepts;
+	}
+	
+	public boolean isGameOver() {
+		return isGameOver;
+	}
 
 	//like the map on the website
 	private void Generatemap() {
@@ -128,6 +174,7 @@ public class WumpusWorld {
 		setUpPercepts();
 		playerX = 0;
 		playerY = 0;
+		map[playerX][playerY].setVisible();
 		playerOR = 'e';
 	}
 
@@ -158,6 +205,5 @@ public class WumpusWorld {
 		map[2][1].setObjective(Objectives.Pit);
 		map[2][2].setObjective(Objectives.Pit);
 		map[3][3].setObjective(Objectives.Pit);
-		map[4][1].setObjective(Objectives.Ladder);
 	}
 }

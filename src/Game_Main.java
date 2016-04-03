@@ -4,7 +4,6 @@ import org.lwjgl.opengl.GL11;
 
 import graphics.GLIcon;
 import graphics.GLPanel;
-//import graphics.GLView.GLViewOnClickListener;
 import graphics.Mouse;
 import graphics.MousePos;
 import graphics.Player;
@@ -12,6 +11,7 @@ import graphics.Shader;
 import graphics.Window;
 import logic.Objectives;
 import logic.Percepts;
+import logic.Tile;
 import logic.WumpusWorld;
 import math.Vector2f;
 import math.Vector3f;
@@ -30,9 +30,7 @@ public class Game_Main {
 	private WumpusWorld world;
 	private Player player;
 	
-	//We will probably want to change this to a 2D array
-	// for more intuitive correspondence to the display
-	private static ArrayList<GLPanel> gridPanels = new ArrayList<GLPanel>();
+	private ArrayList<GLPanel> gridPanels = new ArrayList<GLPanel>();
 	
 	private static int boardSize = 5;
 	
@@ -49,7 +47,7 @@ public class Game_Main {
 	 */
 	public Game_Main() {
 		Window.createWindow(500, 500, "Wumpus World - Game");
-		Window.setClearColor(128, 128, 128);
+		Window.setClearColor(50, 50, 50);
 		System.out.println(Window.getOpenGLVersion());
 		
 		Shader.loadAll();
@@ -58,6 +56,8 @@ public class Game_Main {
 		world = new WumpusWorld();
 		player = new Player(world.getPlayerPosition().x, world.getPlayerPosition().y);
 		initPanels(boardSize);
+		
+		System.out.println("Welcome to the Wumpus World!");
 	}
 
 	/**
@@ -67,7 +67,7 @@ public class Game_Main {
 		long startTime = System.nanoTime();
 		long elapsedTime = 0;
 
-		while(running) {
+		while(running && !world.isGameOver()) {
 			elapsedTime = System.nanoTime() - startTime;
 			
 			if (elapsedTime >= UPDATE_TIME_NS) {
@@ -96,11 +96,20 @@ public class Game_Main {
 			running = false;
 		}
 		
+		// check surroundings
+		ArrayList<Percepts> percepts = world.getPerceptions();
+		
+		// check current tile
+		Objectives objective = world.getTile(world.getPlayerX(), world.getPlayerY()).getObjective();
+		
 		if (Mouse.getMouse(Mouse.LEFT_CLICK)) {
+			
+			// calculate tile of click
 			Vector2f mouse = MousePos.getMousePosition();
 			int tileX = (int) mouse.x / 100;
 			int tileY = (int) mouse.y / 100;
 			
+			// handle player movement
 			if (tileX > world.getPlayerX()) {
 				world.move(1);
 			}
@@ -116,13 +125,22 @@ public class Game_Main {
 			if (tileY > world.getPlayerY()) {
 				world.move(0);
 			}
-			//world.move(0);
+			
+			// print player's status
 			player.setPosition(world.getPlayerX(), world.getPlayerY());
-			//System.out.println("X: " + tileX + " Y: " + tileY);
+			System.out.println("Location: " + world.getPlayerX() + ", " + world.getPlayerY());
+			System.out.println("Direction: " + world.getPlayerOrientation());			
+			
+			System.out.println();
+			
+			
+			// wait shortly to prevent click spamming
+			try {
+				Thread.sleep(200);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
-		
-		player.update();
-		
 		
 		//Update tiles: 
 		
@@ -132,17 +150,42 @@ public class Game_Main {
 		if(!currentPanel.isDiscovered()){
 			currentPanel.discover();
 			
-			Percepts[] percepts = world.getTile(world.getPlayerX(), world.getPlayerY()).getPercepts();
-			
 			for(Percepts percept : percepts){
+				
+				if(percept == Percepts.Glitter) {
+					System.out.println("You see a faint glittering.");
+				}
+				if(percept == Percepts.Breeze) {
+					System.out.println("You hear a strong breeze.");
+				}
+				if(percept == Percepts.Stench) {
+					System.out.println("You smell a powerful stench.");
+				}
+				
 				currentPanel.AddView(new GLIcon(.2f * gridPanels.get(panelIndex).GetWidth(), .2f * gridPanels.get(panelIndex).GetHeight(), percept));
 			}
 			
-			Objectives objective = world.getTile(world.getPlayerX(), world.getPlayerY()).getObjective();
 			if(objective != null){
+				
+				if (objective == Objectives.Gold) {
+					System.out.println("You have found the gold!");
+					//running = false;
+				}
+				if (objective == Objectives.Pit) {
+					System.out.println("You fell into a pit and died!");
+					//running = false;
+				}
+				if (objective == Objectives.Wumpus) {
+					System.out.println("You have been eaten by the Wumpus!");
+					//running = false;
+				}
+				
 				currentPanel.AddView(new GLIcon(.8f * gridPanels.get(panelIndex).GetWidth(), .8f * gridPanels.get(panelIndex).GetHeight(), objective));
 			}
 		}
+		
+		player.update();
+		
 	}
 	
 	/**
@@ -150,6 +193,19 @@ public class Game_Main {
 	 */
 	public void render() {
 		Window.clear();
+		
+//		for(int y = 0; y < boardSize; y++) {
+//			for (int x = 0; x < boardSize; x++) {
+//				if (world.getTile(x, y).isVisible()) {
+//					int offset = x + y * boardSize;
+//					
+//					// this calculation fixes the indexing bug
+//					offset += (20 - (y * boardSize * 2));
+//					
+//					gridPanels.get((offset)).Draw();
+//				}
+//			}
+//		}
 		
 		for(GLPanel panel : gridPanels){
 			panel.Draw();
@@ -159,7 +215,7 @@ public class Game_Main {
 		
 		int error = GL11.glGetError();
 		if (error != GL11.GL_NO_ERROR) {
-			System.out.println(error);
+			//System.out.println(error);
 		}
 				
 		Window.render();
@@ -177,7 +233,7 @@ public class Game_Main {
 	 * Creates dungeon tiles
 	 * @param dimension Size of dungeon, as in N x N
 	 */
-	private static void initPanels(int dimension){
+	private void initPanels(int dimension){
 		//In NDC, width of board is 2 (goes from -1 to 1)
 		//  so divide into 5 equal sections (we can add padding later)
 		float panelWidth = 2.0f / (float)dimension;
@@ -206,7 +262,7 @@ public class Game_Main {
 						yIndex*.1f + xIndex*.1f, .0f, 1.0f));
 				
 				panel.InitBuffers();
-				
+
 				gridPanels.add(panel);
 				
 			}
@@ -215,5 +271,4 @@ public class Game_Main {
 		//Create an icon now so all textures can be generated before gameplay begins
 		GLIcon icon = new GLIcon(.1f, .1f, Percepts.Breeze);
 	}
-
 }

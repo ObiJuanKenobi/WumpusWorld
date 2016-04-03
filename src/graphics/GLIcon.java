@@ -10,7 +10,7 @@ public class GLIcon extends GLView {
 	static Texture glitter = new Texture("res/sprites/glitter.jpg");
 	static Texture wumpus = new Texture("res/sprites/wumpus.jpg");
 	static Texture gold = new Texture("res/sprites/gold.png");
-	static Texture ladder = new Texture("res/sprites/ladder.png");
+	//static Texture ladder = new Texture("res/sprites/ladder.png");
 	static Texture pit = new Texture("res/sprites/pit.jpg");
 
 	public GLIcon(float width, float height, Percepts percept) {
@@ -49,8 +49,8 @@ public class GLIcon extends GLView {
 			return gold;
 		case Pit:
 			return pit;
-		case Ladder:
-			return ladder;
+		//case Ladder:
+			//return ladder;
 		default:
 			return null;
 		}
