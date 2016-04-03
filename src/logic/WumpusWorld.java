@@ -19,7 +19,6 @@ public class WumpusWorld {
 	private int playerY;
 	private char playerOR;
 	private boolean isGameOver;
-	private boolean hasGold;
 
 	/**
 	 * Creates a hardcoded 5x5 wumpus world map
@@ -198,8 +197,8 @@ public class WumpusWorld {
 			return false;
 		}
 	}
-	
-	public boolean isGameOver() {
+
+	public boolean isGameOver(){
 		return isGameOver;
 	}
 
