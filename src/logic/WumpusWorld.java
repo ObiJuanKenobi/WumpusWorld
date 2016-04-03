@@ -5,7 +5,7 @@ import java.util.ArrayList;
 /**
  * @author Paul
  * @author Juan
- * TODO: Handle player movement validation (player doesn't run off map)
+ * 
  * TODO: Get Surrounding Percepts based on where the player is
  * TODO: Handle Player & Objectives interaction 
  * TODO: Handle Game Over
@@ -19,6 +19,7 @@ public class WumpusWorld {
 	private int playerY;
 	private char playerOR;
 	private boolean isGameOver;
+	private boolean hasGold;
 
 	/**
 	 * Creates a hardcoded 5x5 wumpus world map
