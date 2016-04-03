@@ -11,7 +11,6 @@ import graphics.Shader;
 import graphics.Window;
 import logic.Objectives;
 import logic.Percepts;
-import logic.Tile;
 import logic.WumpusWorld;
 import math.Vector2f;
 import math.Vector3f;
@@ -98,12 +97,6 @@ public class Game_Main {
 			running = false;
 		}
 		
-		// check surroundings
-		ArrayList<Percepts> percepts = world.getPerceptions();
-		
-		// check current tile
-		Objectives objective = world.getTile(world.getPlayerX(), world.getPlayerY()).getObjective();
-		
 		if (Mouse.getMouse(Mouse.LEFT_CLICK)) {
 			
 			// calculate tile of click
@@ -132,7 +125,6 @@ public class Game_Main {
 			player.setPosition(world.getPlayerX(), world.getPlayerY());
 			System.out.println("Location: " + world.getPlayerX() + ", " + world.getPlayerY());
 			System.out.println("Direction: " + world.getPlayerOrientation());			
-			
 			System.out.println();
 			
 			
@@ -144,15 +136,25 @@ public class Game_Main {
 			}
 		}
 		
+		player.update();
+		
 		//Update tiles: 
 		
 		int panelIndex = world.getPlayerX() + world.getPlayerY() * 5;
 		GLPanel currentPanel = 	gridPanels.get(panelIndex);
 		
+		// check surroundings
+		ArrayList<Percepts> percepts = world.getPerceptions();
+		
+		// check current tile
+		Objectives objective = world.getTile(world.getPlayerX(), world.getPlayerY()).getObjective();
+		
+		
 		if(!currentPanel.isDiscovered()){
 			currentPanel.discover();
+			System.out.println(currentPanel.xIndex + ", " + currentPanel.yIndex);
 			
-			if(objective != null){
+			if(objective != null && objective != Objectives.Empty){
 				
 				if (objective == Objectives.Gold) {
 					System.out.println("You have found the gold!");
@@ -170,23 +172,23 @@ public class Game_Main {
 				currentPanel.AddView(new GLIcon(.8f * gridPanels.get(panelIndex).GetWidth(), .8f * gridPanels.get(panelIndex).GetHeight(), objective));
 			}
 			
-			for(Percepts percept : percepts){
-				
-				if(percept == Percepts.Glitter) {
-					System.out.println("You see a faint glittering.");
+			else {
+				for(Percepts percept : percepts){
+					
+					if(percept == Percepts.Glitter) {
+						System.out.println("You see a faint glittering.");
+					}
+					if(percept == Percepts.Breeze) {
+						System.out.println("You hear a strong breeze.");
+					}
+					if(percept == Percepts.Stench) {
+						System.out.println("You smell a powerful stench.");
+					}
+					
+					currentPanel.AddView(new GLIcon(.2f * gridPanels.get(panelIndex).GetWidth(), .2f * gridPanels.get(panelIndex).GetHeight(), percept));
 				}
-				if(percept == Percepts.Breeze) {
-					System.out.println("You hear a strong breeze.");
-				}
-				if(percept == Percepts.Stench) {
-					System.out.println("You smell a powerful stench.");
-				}
-				
-				currentPanel.AddView(new GLIcon(.2f * gridPanels.get(panelIndex).GetWidth(), .2f * gridPanels.get(panelIndex).GetHeight(), percept));
 			}
 		}
-		
-		player.update();
 		
 	}
 	

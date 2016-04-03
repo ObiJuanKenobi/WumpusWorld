@@ -15,6 +15,7 @@ public class Tile {
 		this.Y = yPosition;
 		this.percepts = percepts;
 		this.obj = obj;
+		this.obj = Objectives.Empty;
 		isVisible = false;
 	}
 	
