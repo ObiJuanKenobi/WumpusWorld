@@ -53,8 +53,6 @@ public class Player {
 	public void setPosition(int x, int y) {
 		targetPos.x = x;
 		targetPos.y = y;
-		System.out.println(targetPos);
-		System.out.println(getGLCoords());
 	}
 	
 	public Vector3f getGLCoords() {

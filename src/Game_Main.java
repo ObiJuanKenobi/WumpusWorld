@@ -54,6 +54,8 @@ public class Game_Main {
 		world = new WumpusWorld();
 		player = new Player(world.getPlayerPosition().x, world.getPlayerPosition().y);
 		initPanels(boardSize);
+		
+		System.out.println("Welcome to the Wumpus World!");
 	}
 
 	/**
@@ -63,7 +65,7 @@ public class Game_Main {
 		long startTime = System.nanoTime();
 		long elapsedTime = 0;
 
-		while(running) {
+		while(running && !world.isGameOver()) {
 			elapsedTime = System.nanoTime() - startTime;
 			
 			if (elapsedTime >= UPDATE_TIME_NS) {
@@ -106,9 +108,15 @@ public class Game_Main {
 			if (tileY > world.getPlayerY()) {
 				world.move(0);
 			}
-			//world.move(0);
+			
 			player.setPosition(world.getPlayerX(), world.getPlayerY());
-			//System.out.println("X: " + tileX + " Y: " + tileY);
+			System.out.println("Moved to: " + world.getPlayerX() + ", " + world.getPlayerY());
+			
+			try {
+				Thread.sleep(200);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
 		
 		player.update();
@@ -137,7 +145,7 @@ public class Game_Main {
 		
 		int error = GL11.glGetError();
 		if (error != GL11.GL_NO_ERROR) {
-			System.out.println(error);
+			//System.out.println(error);
 		}
 				
 		Window.render();

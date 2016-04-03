@@ -17,17 +17,15 @@ public class WumpusWorld {
 	private int playerX;
 	private int playerY;
 	private char playerOR;
+	private boolean isGameOver;
 
 	/**
 	 * Creates a hardcoded 5x5 wumpus world map
 	 * Player starts at 0,0 and has an Orientation 'e'
 	 */
 	public WumpusWorld() {
+		isGameOver = false;
 		Generatemap();
-	}
-
-	public WumpusWorld(int size) {
-		// Random map generation
 	}
 
 	/**
@@ -59,46 +57,28 @@ public class WumpusWorld {
 		switch (direction) {
 		// move up
 		case 0:
-			if (playerOR == 'n') {
-				// actually move
-				playerY++;
-				map[playerX][playerY].setVisible();
-				return true;
-			} else {
-				// set orientation
-				playerOR = 'n';
-				return false;
-			}
-			// move right
+			playerY++;
+			map[playerX][playerY].setVisible();
+			return true;
+
+		// move right
 		case 1:
-			if (playerOR == 'e') {
-				playerX++;
-				map[playerX][playerY].setVisible();
-				return true;
-			} else {
-				playerOR = 'e';
-				return false;
-			}
-			// move down
+			playerX++;
+			map[playerX][playerY].setVisible();
+			return true;
+
+		// move down
 		case 2:
-			if (playerOR == 's') {
-				playerY--;
-				map[playerX][playerY].setVisible();
-				return true;
-			} else {
-				playerOR = 's';
-				return false;
-			}
-			// move left
+			playerY--;
+			map[playerX][playerY].setVisible();
+			return true;
+
+		// move left
 		case 3:
-			if (playerOR == 'w') {
-				playerX--;
-				map[playerX][playerY].setVisible();
-				return true;
-			} else {
-				playerOR = 'w';
-				return false;
-			}
+			playerX--;
+			map[playerX][playerY].setVisible();
+			return true;
+			
 		}
 		// should never get to this point
 		return false;
@@ -118,6 +98,10 @@ public class WumpusWorld {
 
 	public char getPlayerOrientation() {
 		return playerOR;
+	}
+	
+	public boolean isGameOver() {
+		return isGameOver;
 	}
 
 	//like the map on the website
