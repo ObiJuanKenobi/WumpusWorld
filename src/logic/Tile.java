@@ -42,7 +42,9 @@ public class Tile {
 	}
 
 	public Percepts[] getPercepts() {
-		return (Percepts[]) percepts.toArray();
+		Percepts[] toReturn = new Percepts[percepts.size()];
+		toReturn = percepts.toArray(toReturn);
+		return toReturn; 
 	}
 
 	public void addPrecept(Percepts p){

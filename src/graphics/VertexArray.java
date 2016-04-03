@@ -5,6 +5,8 @@ import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL30.*;
 
+import org.lwjgl.opengl.GL15;
+
 import utils.BufferUtils;
 
 /**
@@ -97,6 +99,14 @@ public class VertexArray {
 		bind();
 		draw();
 		unbind();
+	}
+	
+	
+	public void deleteBuffers(){
+		GL15.glDeleteBuffers(vao);
+		GL15.glDeleteBuffers(vbo);
+		GL15.glDeleteBuffers(ibo);
+		GL15.glDeleteBuffers(tbo);
 	}
 
 }

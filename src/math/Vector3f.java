@@ -20,4 +20,8 @@ public class Vector3f {
 		return "X: " + x + " Y: " + y + " Z: " + z;
 	}
 
+	public Vector3f add(Vector3f translation) {
+		return new Vector3f(this.x + translation.x, this.y + translation.y, this.z + translation.z);
+	}
+
 }

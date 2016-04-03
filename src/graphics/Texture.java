@@ -6,6 +6,8 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import org.lwjgl.opengl.GL13;
+
 import utils.BufferUtils;
 
 import static org.lwjgl.opengl.GL11.*;

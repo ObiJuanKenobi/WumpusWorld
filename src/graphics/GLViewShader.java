@@ -7,29 +7,35 @@ import org.lwjgl.opengl.GL32;
 public class GLViewShader {
 	
 	public int programId;
-	public int objectColorLoc;
+	//public int objectColorLoc;
 	
-	static String vertexShaderSource = "#version 330 core\n" +
-		"in vec2 position;\n" +
+	static String vertexShaderSource = "#version 330 core\n" +		
+		"layout (location = 1) in vec3 position;\n" +
+		"layout (location = 2) in vec2 texCoords;\n" +
+		"out vec2 texOut;\n" +
 		"void main()\n" +
 		"{\n" +
-		"gl_Position = vec4(position, 1.0f, 1.0f);\n" +
+		"texOut = texCoords;\n" +
+		"gl_Position = vec4(position.x, position.y, 0.1f, 1.0f);\n" +
 		"}\0";
 
 	static String fragmentShaderSource = "#version 330 core\n" +
 		"out vec4 color;\n" +
-		"uniform vec4 objectColor;\n" +
+		"in vec2 texOut;\n" +
+		"uniform sampler2D tex;\n" + 
 		"void main()\n" +
 		"{\n" +
-		"color = objectColor;\n" +
+		"color = texture(tex, texOut);\n" +
 		"}\n\0";
+	
+	//vec4(texOut.x, texOut.y, 0.0, 0.0);
 	
 	public GLViewShader() {
 		int[] shaders = new int[2];
 		shaders[0] = createShader(GL20.GL_VERTEX_SHADER, vertexShaderSource);
 		shaders[1] = createShader(GL20.GL_FRAGMENT_SHADER, fragmentShaderSource);
 		programId = createShaderProgram(shaders);
-		objectColorLoc = GL20.glGetUniformLocation(programId, "objectColor");
+		//objectColorLoc = GL20.glGetUniformLocation(programId, "objectColor");
 	}
 	
 	static int createShader(int shadertype, String shaderString){

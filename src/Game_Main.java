@@ -2,6 +2,7 @@ import java.util.ArrayList;
 
 import org.lwjgl.opengl.GL11;
 
+import graphics.GLIcon;
 import graphics.GLPanel;
 //import graphics.GLView.GLViewOnClickListener;
 import graphics.Mouse;
@@ -9,8 +10,11 @@ import graphics.MousePos;
 import graphics.Player;
 import graphics.Shader;
 import graphics.Window;
+import logic.Objectives;
+import logic.Percepts;
 import logic.WumpusWorld;
 import math.Vector2f;
+import math.Vector3f;
 import math.Vector4f;
 
 /**
@@ -75,6 +79,12 @@ public class Game_Main {
 			render();
 		}
 		
+		//Cleanup resources:
+		
+		for(GLPanel panel : gridPanels){
+			panel.Deallocate();
+		}
+		
 		Window.dispose();
 	}
 	
@@ -112,6 +122,27 @@ public class Game_Main {
 		}
 		
 		player.update();
+		
+		
+		//Update tiles: 
+		
+		int panelIndex = world.getPlayerX() + world.getPlayerY() * 5;
+		GLPanel currentPanel = 	gridPanels.get(panelIndex);
+		
+		if(!currentPanel.isDiscovered()){
+			currentPanel.discover();
+			
+			Percepts[] percepts = world.getTile(world.getPlayerX(), world.getPlayerY()).getPercepts();
+			
+			for(Percepts percept : percepts){
+				currentPanel.AddView(new GLIcon(.2f * gridPanels.get(panelIndex).GetWidth(), .2f * gridPanels.get(panelIndex).GetHeight(), percept));
+			}
+			
+			Objectives objective = world.getTile(world.getPlayerX(), world.getPlayerY()).getObjective();
+			if(objective != null){
+				currentPanel.AddView(new GLIcon(.8f * gridPanels.get(panelIndex).GetWidth(), .8f * gridPanels.get(panelIndex).GetHeight(), objective));
+			}
+		}
 	}
 	
 	/**
@@ -154,72 +185,35 @@ public class Game_Main {
 		//Same for height:
 		float panelHeight = 2.0f / (float)dimension;
 		
-		float yStart = -1.0f;
+		float yStart = 1.0f - panelHeight;
 		float xStart = -1.0f;
 		
 		for(int yIndex = 0; yIndex < dimension; yIndex++){
 			
-			float yPt = yStart + yIndex*panelHeight;
+			float yPt = yStart - yIndex*panelHeight;
 			
 			for(int xIndex = 0; xIndex < dimension; xIndex++){
 				float xPt = xStart + xIndex*panelWidth;
 				
 				GLPanel panel = new GLPanel(panelWidth, panelHeight,
-						GLPanel.Orientation.vertical, .1f, .1f, .1f, xIndex, yIndex);
+						GLPanel.Orientation.vertical, .025f, .025f, .025f, xIndex, yIndex);
 				
 				//Position the panel:
-				panel.Translate(new Vector2f(xPt, yPt));
+				panel.Translate(new Vector3f(xPt, yPt, .0f));
 				
 				//Rendering in different colors right now just to show the different panels:
 				panel.SetColor(new Vector4f(yIndex*.1f + xIndex*.1f, 
 						yIndex*.1f + xIndex*.1f, .0f, 1.0f));
 				
-				//final int x = xIndex;
-				//final int y = yIndex;
-				
-				//We may not even want to use a listener in this way or at all..
-				//Just a debugging listener for now
-//				GLViewOnClickListener listener = new GLViewOnClickListener(){
-//
-//					@Override
-//					public void onClick() {
-//						System.out.println("" + x + ", " + y + " clicked");
-//					}
-//					
-//				};
+				panel.InitBuffers();
 				
 				gridPanels.add(panel);
 				
 			}
 		}
+		
+		//Create an icon now so all textures can be generated before gameplay begins
+		GLIcon icon = new GLIcon(.1f, .1f, Percepts.Breeze);
 	}
-	
-	//Mouse callbacks:
-	/*
-	 
-	 void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
-	{
-		mouseX = xpos / WIDTH;
-		mouseX = ((mouseX - .5f) / .5f);
-	
-		mouseY = ypos / HEIGHT;
-		mouseY = ((mouseY - .5f) / -.5f);
-	
-	
-	}
-	
-	void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
-	{
-		if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-			glm::vec3 mouseClick = glm::vec3(mouseX, mouseY, 0.0f);
-			for (std::vector<GLView*>::iterator it = views.begin(); it != views.end(); it++) {
-				if ((*it)->CheckClicked(mouseClick)) {
-					(*it)->OnClick(mouseClick);
-				}
-			}
-	
-		}
-	}
-	 */
 
 }

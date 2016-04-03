@@ -3,6 +3,7 @@ package graphics;
 import java.util.ArrayList;
 
 import math.Vector2f;
+import math.Vector3f;
 
 //A container that manages the drawing and translation of
 // all subviews
@@ -27,6 +28,12 @@ public class GLPanel extends GLView {
 	// and top right should be N, N
 	public int xIndex;
 	public int yIndex;
+	
+	private boolean isDiscovered = false;
+	
+	private static Texture undiscovered = new Texture("res/sprites/fog.jpg");
+	private static Texture discovered = new Texture("res/sprites/dirt.jpg");
+	
 
 	public GLPanel(float width, float height, Orientation orientation, 
 			float xPadding, float yPadding, float viewSpacing) {
@@ -45,47 +52,61 @@ public class GLPanel extends GLView {
 		this(width, height, orientation, xPadding, yPadding, viewSpacing);
 		this.xIndex = xIndex;
 		this.yIndex = yIndex;
+		
+		this.texture = undiscovered;
 	}
 
 	public void AddView(GLView view) {
-		Vector2f lowerLeft = new Vector2f(0f, 0f);
+		Vector3f lowerLeft = new Vector3f(0f, 0f, 0f);
 
 		if (this.mSubviews.size() == 0) {
-			Vector2f upperLeft = this.mPosition.add(new Vector2f(this.mPaddingX, this.mHeight - this.mPaddingY));
-			lowerLeft = upperLeft.sub(new Vector2f(0.0f, view.GetHeight()));
+			Vector3f upperLeft = this.mPosition.add(new Vector3f(this.mPaddingX, this.mHeight - this.mPaddingY, .0f));
+			lowerLeft = upperLeft.add(new Vector3f(0.0f, -view.GetHeight(), 0.0f));
 		}
 		else {
 			GLView prevView = this.mSubviews.get(this.mSubviews.size() - 1);
 			
 			if (this.mOrientation == Orientation.vertical) {
-				Vector2f spacingUpdate = new Vector2f(0.0f, -this.mSpacing);
-				Vector2f upperLeft = prevView.GetPosition().add(spacingUpdate);
-				lowerLeft = upperLeft.sub(new Vector2f(0.0f, view.GetHeight()));
+				Vector3f spacingUpdate = new Vector3f(0.0f, -this.mSpacing, 0.0f);
+				Vector3f upperLeft = prevView.GetPosition().add(spacingUpdate);
+				lowerLeft = upperLeft.add(new Vector3f(0.0f, -view.GetHeight(), .0f));
 
 			}
 			else {
-				 float x = prevView.GetPosition().getX() + prevView.GetWidth() + this.mSpacing;
-				 float y = this.mPosition.getY() + this.mHeight - this.mPaddingY - view.GetHeight();
-				 lowerLeft = new Vector2f(x, y);
+				 float x = prevView.GetPosition().x + prevView.GetWidth() + this.mSpacing;
+				 float y = this.mPosition.y + this.mHeight - this.mPaddingY - view.GetHeight();
+				 lowerLeft = new Vector3f(x, y, .0f);
 			}
 		}
 		
 		//lowerLeft.z = zOffset; //0.0f;
 		view.Translate(lowerLeft);
+		view.InitBuffers();
 		this.mSubviews.add(view);
 	}
 	
-	public void Translate(Vector2f trans){
+	public void Translate(Vector3f trans){
 		super.Translate(trans);
 		for (GLView subview : this.mSubviews) {
 			subview.Translate(trans);
 		}
 	}
 	
-	public void UpdateTranslate(Vector2f trans){
+	public void UpdateTranslate(Vector3f trans){
 		super.UpdateTranslate(trans);
 		for (GLView subview : this.mSubviews) {
 			subview.UpdateTranslate(trans);
+		}
+	}
+	
+	public boolean isDiscovered(){
+		return isDiscovered;
+	}
+	
+	public void discover(){
+		if(!isDiscovered){
+			this.texture = discovered;
+			isDiscovered = true;
 		}
 	}
 
@@ -95,22 +116,24 @@ public class GLPanel extends GLView {
 
 		//For this project I think we just need to know if the panel is clicked, 
 		// not any subviews
-		
-		//Check if subviews were clicked:
-//		for (std::vector<GLView*>::iterator it = this->mSubviews.begin(); it != this->mSubviews.end(); it++) {
-//			if ((*it)->CheckClicked(clickPt)) {
-//				(*it)->OnClick(clickPt);
-//			}
-//		}
 	}
 
 	public void Draw() {
+		
+		//Draw the panel:
+		super.Draw();
+		
 		//Draw all subviews:
 		for (GLView subview : this.mSubviews) {
 			subview.Draw();
 		}
-
-		//Draw the panel:
-		super.Draw();
+		
+	}
+	
+	public void Deallocate(){
+		for(GLView view : mSubviews){
+			view.Deallocate();
+		}
+		super.Deallocate();
 	}
 }
