@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Collection;
 
 import org.lwjgl.opengl.GL11;
 
@@ -136,7 +137,7 @@ public class Game_Main {
 			}
 		}
 		
-		player.update();
+		player.update(world.getPlayerOrientation());
 		
 		//Update tiles: 
 		
@@ -144,7 +145,7 @@ public class Game_Main {
 		GLPanel currentPanel = 	gridPanels.get(panelIndex);
 		
 		// check surroundings
-		ArrayList<Percepts> percepts = world.getPerceptions();
+		Collection<Percepts> percepts = world.getPerceptions();
 		
 		// check current tile
 		Objectives objective = world.getTile(world.getPlayerX(), world.getPlayerY()).getObjective();
@@ -152,7 +153,7 @@ public class Game_Main {
 		
 		if(!currentPanel.isDiscovered()){
 			currentPanel.discover();
-			System.out.println(currentPanel.xIndex + ", " + currentPanel.yIndex);
+			//System.out.println(currentPanel.xIndex + ", " + currentPanel.yIndex);
 			
 			if(objective != null && objective != Objectives.Empty){
 				
@@ -260,11 +261,7 @@ public class Game_Main {
 				
 				//Position the panel:
 				panel.Translate(new Vector3f(xPt, yPt, .0f));
-				
-				//Rendering in different colors right now just to show the different panels:
-				panel.SetColor(new Vector4f(yIndex*.1f + xIndex*.1f, 
-						yIndex*.1f + xIndex*.1f, .0f, 1.0f));
-				
+	
 				panel.InitBuffers();
 
 				gridPanels.add(panel);
@@ -273,7 +270,7 @@ public class Game_Main {
 		}
 		
 		//Create an icon now so all textures can be generated before gameplay begins
-		GLIcon icon = new GLIcon(.1f, .1f, Percepts.Breeze);
+		//GLIcon icon = new GLIcon(.1f, .1f, Percepts.Breeze);
 		
 		panelWidth = windowWidth / dimension;
 		panelHeight = windowHeight / dimension;

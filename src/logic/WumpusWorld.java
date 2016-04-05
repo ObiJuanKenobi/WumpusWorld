@@ -1,7 +1,8 @@
 package logic;
 
 import java.awt.Point;
-import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 /**
  * @author Paul
  * @author Juan
@@ -123,8 +124,8 @@ public class WumpusWorld {
 	 * Checks surrounding tiles for objectives
 	 * @return ArrayList of the perceived objectives
 	 */
-	public ArrayList<Percepts> getPerceptions() {
-		ArrayList<Percepts> percepts = new ArrayList<Percepts>();
+	public Collection<Percepts> getPerceptions() {
+		HashSet<Percepts> percepts = new HashSet<Percepts>();
 		
 		for (int y = -1; y <= 1; y++) {
 			for (int x = -1; x <= 1; x++) {

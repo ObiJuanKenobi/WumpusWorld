@@ -103,10 +103,10 @@ public class VertexArray {
 	
 	
 	public void deleteBuffers(){
-		GL15.glDeleteBuffers(vao);
-		GL15.glDeleteBuffers(vbo);
-		GL15.glDeleteBuffers(ibo);
-		GL15.glDeleteBuffers(tbo);
+		glDeleteBuffers(tbo);
+		glDeleteBuffers(vao);
+		glDeleteBuffers(ibo);
+		glDeleteBuffers(vbo);
 	}
 
 }

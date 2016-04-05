@@ -16,12 +16,10 @@ import math.Vector4f;
 
 public class GLView {
 	
-	public interface GLViewOnClickListener {
-		void onClick();
-	}
-	
 	protected float mHeight;
 	protected float mWidth;
+	
+	protected boolean isPanel = false;
 
 	protected String mText;
 	
@@ -29,11 +27,6 @@ public class GLView {
 
 	// (xpos, ypos) is lower left corner of view
 	protected Vector3f mPosition;
-
-	// RGBA color of view
-	protected Vector4f mColor;
-
-	protected GLViewOnClickListener mOnClickListener;
 	
 	protected VertexArray vertexArray;
 	
@@ -44,8 +37,6 @@ public class GLView {
 		this.mHeight = height;
 
 		this.mPosition = new Vector3f(0.0f, 0.0f, depth);
-
-		this.mColor = new Vector4f();
 	}
 
 	public void SetText(String text) {
@@ -62,10 +53,6 @@ public class GLView {
 
 	public void SetHeight(float height) {
 		this.mHeight = height;
-	}
-
-	public void SetColor(Vector4f color) {
-		this.mColor = color;
 	}
 
 	public float GetWidth() {
@@ -95,14 +82,6 @@ public class GLView {
 		return (clickPt.getX() >= this.mPosition.x && clickPt.x <= this.mPosition.x + this.mWidth)
 				&& (clickPt.y >= this.mPosition.y && clickPt.y <= this.mPosition.y + this.mHeight);
 	}
-
-	public void SetClickListener(GLViewOnClickListener listener) {
-		this.mOnClickListener = listener;
-	}
-
-	public void OnClick(Vector2f clickPt) {
-		this.mOnClickListener.onClick();
-	}
 	
 	public void InitBuffers(){
 		float[] vertices = new float[12];
@@ -130,9 +109,19 @@ public class GLView {
 		
 		byte[] indices = {0, 1, 2, 2, 3, 0};
 		
-		float[] tcs = new float[] { 0, 0, 0, 1, 1, 1, 1, 0 };
+		if(!isPanel){
+			float[] tcs = new float[] { 0, 0, 0, 1, 1, 1, 1, 0 };
+			vertexArray = new VertexArray(vertices, indices, tcs);
 		
-		vertexArray = new VertexArray(vertices, indices, tcs);
+		}
+		else {
+			//Have fog image overlay entire map, not each tile
+			float[] tcs = new float[] { (upperLeft.x + 1f) / 2f, -1f *(upperLeft.y - 1f) / 2f, 
+				(upperLeft.x + 1f) / 2f, -1f * (lowerLeft.y - 1f) / 2f, 
+				(lowerRight.x + 1f) / 2f, -1f * (lowerRight.y - 1f) / 2f, 
+				(upperRight.x + 1f) /2f, -1f * (upperRight.y - 1f) / 2f };
+			vertexArray = new VertexArray(vertices, indices, tcs);
+		}
 		
 	}
 	
@@ -146,6 +135,7 @@ public class GLView {
 		Shader.PLAYER.setUniformMat4f("ml_matrix", Matrix4f.identity());
 		texture.bind();
 		vertexArray.render();
+		texture.unbind();
 		Shader.PLAYER.disable();
 	}
 

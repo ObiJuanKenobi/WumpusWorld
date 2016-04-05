@@ -19,8 +19,24 @@ public class Player {
 	
 	private Vector3f position;
 	private Vector3f scale;
-	private VertexArray mesh;
-	private Texture texture;
+	
+	private VertexArray meshN;
+	private VertexArray meshS;
+	private VertexArray meshE;
+	private VertexArray meshW;
+	
+	private VertexArray curMesh;
+	
+	private Texture texture = new Texture("res/sprites/character_sprites.png");
+	
+	private float[] vertices = new float[] { -SIZE / 2.0f, -SIZE / 2.0f, depth, 
+			 -SIZE / 2.0f, SIZE / 2.0f,  depth, 
+			  SIZE / 2.0f, SIZE / 2.0f,  depth, 
+			  SIZE / 2.0f, -SIZE / 2.0f, depth };
+
+	private byte[] indices = new byte[] { 0, 1, 2, 2, 3, 0 };
+	
+	private char orientation = 'e';
 
 	/**
 	 * Creates a new player at given location
@@ -28,17 +44,10 @@ public class Player {
 	 * @param y Starting Y coord of player
 	 */
 	public Player(int x, int y) {
-		float[] vertices = new float[] { -SIZE / 2.0f, -SIZE / 2.0f, depth, 
-										 -SIZE / 2.0f, SIZE / 2.0f,  depth, 
-										  SIZE / 2.0f, SIZE / 2.0f,  depth, 
-										  SIZE / 2.0f, -SIZE / 2.0f, depth };
+		
+		initOrientations();
+		updateOrientation();
 
-		byte[] indices = new byte[] { 0, 1, 2, 2, 3, 0 };
-
-		float[] tcs = new float[] { 0, 1, 0, 0, 1, 0, 1, 1 };
-
-		mesh = new VertexArray(vertices, indices, tcs);
-		texture = new Texture("res/sprites/brendan.png");
 		scale = new Vector3f(0.25f, 0.25f, 1);
 		position = new Vector3f(0, 0, 0);
 		targetPos = new Vector2i(0, 0);
@@ -66,7 +75,13 @@ public class Player {
 	/**
 	 * Moves the player closer to it's desired position
 	 */
-	public void update() {
+	public void update(char orientation) {
+		
+		if(orientation != this.orientation){
+			this.orientation = orientation;
+			updateOrientation();
+		}
+		
 		if (position.x < targetPos.x) {
 			position.x += moveSpeed;
 		}
@@ -101,8 +116,49 @@ public class Player {
 		Shader.PLAYER.enable();
 		Shader.PLAYER.setUniformMat4f("ml_matrix", Matrix4f.translate(getGLCoords()).multiply(Matrix4f.scale(scale)));
 		texture.bind();
-		mesh.render();
+		curMesh.render();
 		Shader.PLAYER.disable();
 	}
+	
+	private void updateOrientation(){
+		switch(this.orientation){
+		case 'n':
+			curMesh = meshN;
+			break;
+			
+		case 's':
+			curMesh = meshS;
+			break;
+			
+		case 'e':
+			curMesh = meshE;
+			break;
+			
+		case 'w':
+			curMesh = meshW;
+			break;
+			
+		default:
+			curMesh = meshE;
+			System.out.println("Default player mesh -- should not happen");
+		}
+	}
+	
+	
+	private void initOrientations(){
+		float[] tcs;
+		tcs = new float[] { .333f, 1f, .333f, .75f, .666f, .75f, .666f, 1f };
+		meshN = new VertexArray(vertices, indices, tcs);
+			
+		tcs = new float[] { .333f, .25f, .333f, 0f, .666f, 0f, .666f, .25f };
+		meshS = new VertexArray(vertices, indices, tcs);
+			
+		tcs = new float[] { .333f, .75f, .333f, .5f, .666f, .5f, .666f, .75f };
+		meshE = new VertexArray(vertices, indices, tcs);
+			
+		tcs = new float[] { .333f, .5f, .333f, .25f, .666f, .25f, .666f, .5f };
+		meshW = new VertexArray(vertices, indices, tcs);
+	}
+	
 
 }

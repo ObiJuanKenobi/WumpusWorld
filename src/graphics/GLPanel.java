@@ -44,6 +44,8 @@ public class GLPanel extends GLView {
 		this.mPaddingX = xPadding;
 		this.mPaddingY = yPadding;
 		this.mSpacing = viewSpacing;
+		
+		isPanel = true;
 	}
 	
 	public GLPanel(float width, float height, Orientation orientation, 
@@ -106,16 +108,13 @@ public class GLPanel extends GLView {
 	public void discover(){
 		if(!isDiscovered){
 			this.texture = discovered;
+			//this.vertexArray.deleteBuffers();
+			
+			isPanel = false;
+			//this.InitBuffers();
 			isDiscovered = true;
+			
 		}
-	}
-
-	public void OnClick(Vector2f clickPt) {
-		//In case there is a general onClick callback for whole panel:
-		super.OnClick(clickPt); 
-
-		//For this project I think we just need to know if the panel is clicked, 
-		// not any subviews
 	}
 
 	public void Draw() {
