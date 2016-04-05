@@ -31,7 +31,7 @@ public class WumpusWorld {
 	isGameOver = false;
 	 */
 	public WumpusWorld() {
-		GenerateValidWorld(50);
+		GenerateValidWorld(5);
 
 		playerX = 0;
 		playerY = 0;
@@ -277,7 +277,7 @@ public class WumpusWorld {
 			failedCount++;
 		}
 
-		System.out.println("Failed: " + failedCount + " times");
+		System.out.println("Failed: " + (failedCount - 1) + " times");
 
 	}
 
@@ -293,9 +293,12 @@ public class WumpusWorld {
 		boolean goldFound = false;
 
 		queue.add(map[0][0]);
+		visited.put(map[0][0], true);
 
 		while ( !queue.isEmpty() ) {
 			Tile curTile = queue.get(0);
+
+			//System.out.println(queue.size());
 
 			visited.put(curTile, true);
 
@@ -318,6 +321,7 @@ public class WumpusWorld {
 			if ( y - 1 > 0 && isOpenTile(map[y-1][x]) ) {
 				if ( !visited.containsKey(map[y-1][x]) ) {
 					queue.add(map[y-1][x]);
+					visited.put(map[y-1][x], true);
 				}
 			}
 
@@ -325,6 +329,7 @@ public class WumpusWorld {
 			if ( y + 1 < map.length && isOpenTile(map[y+1][x]) ) {
 				if ( !visited.containsKey(map[y+1][x]) ) {
 					queue.add(map[y+1][x]);
+					visited.put(map[y+1][x], true);
 				}
 			}
 
@@ -332,6 +337,7 @@ public class WumpusWorld {
 			if ( x - 1 > 0 && isOpenTile(map[y][x-1]) ) {
 				if ( !visited.containsKey(map[y][x-1]) ) {
 					queue.add(map[y][x-1]);
+					visited.put(map[y][x-1], true);
 				}
 			}
 
@@ -339,6 +345,7 @@ public class WumpusWorld {
 			if ( x + 1 < map.length && isOpenTile(map[y][x+1]) ) {
 				if ( !visited.containsKey(map[y][x+1]) ) {
 					queue.add(map[y][x+1]);
+					visited.put(map[y][x+1], true);
 				}
 			}
 
@@ -357,7 +364,7 @@ public class WumpusWorld {
 	 * @param width
      */
 	boolean GenerateRandomWorld(int width){
-		double pitProbability = 0.15; //TODO: Could be a constant at top of file
+		double pitProbability = 0.50; //TODO: Could be a constant at top of file
 
 		map = new Tile[width][width];
 
