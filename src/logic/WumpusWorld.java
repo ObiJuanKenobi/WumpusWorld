@@ -23,7 +23,6 @@ public class WumpusWorld {
 	private char playerOR;
 	private boolean isGameOver;
 	private boolean hasGold;
-	private boolean wonGame;
 
 	/**
 	 * Creates a hardcoded 5x5 wumpus world map
@@ -130,6 +129,15 @@ public class WumpusWorld {
 			return false;
 		}
 		
+	}
+	
+	public boolean hasWon(){
+		Objectives obj = map[playerX][playerY].getObjective();
+		
+		if(obj == Objectives.Latter && hasGold){
+			return true;
+		}
+		return false;
 	}
 	
 	public boolean hasGold(){
