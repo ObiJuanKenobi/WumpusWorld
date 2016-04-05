@@ -27,6 +27,7 @@ public class WumpusWorld {
 	 */
 	public WumpusWorld() {
 		Generatemap();
+		isGameOver = false;
 	}
 
 	/**
@@ -201,8 +202,25 @@ public class WumpusWorld {
 			return false;
 		}
 	}
-
+	
 	public boolean isGameOver(){
+		Objectives obj = map[playerX][playerY].getObjective();
+		
+		switch(obj){
+		
+		case Wumpus:
+			isGameOver = true;
+			return isGameOver;
+		case Pit:
+			isGameOver = true;
+			return isGameOver;
+		default:
+			return isGameOver;
+		}
+		
+	}
+
+	public boolean getGameOver(){
 		return isGameOver;
 	}
 
