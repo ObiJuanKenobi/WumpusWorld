@@ -1,7 +1,9 @@
 package logic;
 
 import java.awt.Point;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 /**
  * @author Paul
@@ -270,23 +272,112 @@ public class WumpusWorld {
 //		map[3][3].setObjective(Objectives.Pit);
 //	}
 
-	private void GenerateValidWorld(int width){
-//		while ( !CurrentMapIsValid() ) {
-//			//Generate a random world until it's valid
-//			GenerateRandomWorld(width);
-//		}
+	private void printWorldPercepts(){
+		for(int y = 0; y < map.length; y++){
+			for(int x = 0; x < map.length; x++){
+				System.out.print('[');
+				for(int i = 0; i < getTile(x,y).getPercepts().length; i++ ) {
+					System.out.print('.' + getTile(x,y).getPercepts()[i].toString() + '.');
+				}
+				System.out.print(']');
+			}
+			System.out.println(' ');
+		}
+	}
 
-		GenerateRandomWorld(width);
+	private void printWorldObjectives(){
+		for(int y = 0; y < map.length; y++){
+			for(int x = 0; x < map.length; x++){
+				System.out.print('[' + getTile(x,y).getObjective().toString() + ']');
+			}
+			System.out.println(' ');
+		}
+	}
+
+	/**
+	 * Generates a solvable pseudo random world of width x width dimensions
+	 * @param width
+     */
+	private void GenerateValidWorld(int width){
+		boolean currentMapValid = false;
+
+		while ( !currentMapValid ) {
+			GenerateRandomWorld(10);
+
+			//Helper prints
+			printWorldObjectives();
+			System.out.println("------------------------");
+
+			currentMapValid = CurrentMapIsValid();
+		}
 
 		//Now add precepts
 		AddPreceptsToMap();
 	}
 
+	/**
+	 * BFS to validate a map can be solved
+	 * @return
+     */
 	private boolean CurrentMapIsValid(){
-		//TODO:
-		return true;
+		ArrayList<Tile> queue = new ArrayList<>();
+		HashMap<Tile, Boolean> visited = new HashMap<>();
+
+		queue.add(map[0][0]);
+
+		while ( !queue.isEmpty() ) {
+			Tile curTile = queue.get(0);
+
+			visited.put(curTile, true);
+
+			int x = curTile.getX();
+			int y = curTile.getY();
+
+			if ( curTile.getObjective() == Objectives.Gold ) {
+				return true;
+			}
+
+			//Check/add square above
+			if ( y - 1 > 0 && isOpenTile(map[y-1][x]) ) {
+				if ( !visited.containsKey(map[y-1][x]) ) {
+					queue.add(map[y-1][x]);
+				}
+			}
+
+			//Check/add square below
+			if ( y + 1 < map.length && isOpenTile(map[y+1][x]) ) {
+				if ( !visited.containsKey(map[y+1][x]) ) {
+					queue.add(map[y+1][x]);
+				}
+			}
+
+			//Check/add square left
+			if ( x - 1 > 0 && isOpenTile(map[y][x-1]) ) {
+				if ( !visited.containsKey(map[y][x-1]) ) {
+					queue.add(map[y][x-1]);
+				}
+			}
+
+			//Check/add square right
+			if ( x + 1 < map.length && isOpenTile(map[y][x+1]) ) {
+				if ( !visited.containsKey(map[y][x+1]) ) {
+					queue.add(map[y][x+1]);
+				}
+			}
+
+			queue.remove(0);
+		}
+
+		return false;
 	}
 
+	private boolean isOpenTile(Tile t){
+		return t.getObjective() != Objectives.Wumpus && t.getObjective() != Objectives.Pit;
+	}
+
+	/**
+	 * Given a map, fill in its percepts
+	 */
 	private void AddPreceptsToMap(){
 		for(int y = 0; y < map.length; y++){
 			for(int x = 0; x < map.length; x++){
@@ -355,8 +446,12 @@ public class WumpusWorld {
 		}
 	}
 
+	/**
+	 * Generate a random width x width world with pit probability pitProbabily
+	 * @param width
+     */
 	private void GenerateRandomWorld(int width){
-		double pitProbability = 0.35; //TODO: Could be a constant at top of file
+		double pitProbability = 0.50; //TODO: Could be a constant at top of file
 
 		map = new Tile[width][width];
 
@@ -368,7 +463,7 @@ public class WumpusWorld {
 		int goldX = (int) (Math.random() * width);
 		int goldY = (int) (Math.random() * width);
 
-		//Invalid, lazy restart
+		//Wumpus on gold, lazy restart
 		if ( goldX == wumpusX && goldY == wumpusY ) {
 			return;
 		}
@@ -378,9 +473,15 @@ public class WumpusWorld {
 			for(int x = 0; x < width; x++) {
 				Tile curTile = new Tile(x,y);
 
+				//Nothing on start
+				if ( x == 0 && y == 0 ) {
+					curTile.setObjective(Objectives.Empty);
+					map[y][x] = curTile;
+					continue;
+				}
+
 				//Simple psuedorandom pit generator.
-				//If a random number between 1 and 100 is less than or equal to our probability
-				boolean isPit =  ((int) (Math.random() * 100)) <= ((int)(pitProbability * 100));
+				boolean isPit =  Math.random() <= pitProbability;
 
 				//Place one objective max per tile
 				if ( x == wumpusX && y == wumpusY ) {
@@ -393,7 +494,7 @@ public class WumpusWorld {
 					curTile.setObjective(Objectives.Empty);
 				}
 
-				map[x][y] = curTile;
+				map[y][x] = curTile;
 			}
 		}
 
