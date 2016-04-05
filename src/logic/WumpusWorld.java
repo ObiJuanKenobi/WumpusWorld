@@ -302,12 +302,7 @@ public class WumpusWorld {
 		boolean currentMapValid = false;
 
 		while ( !currentMapValid ) {
-			GenerateRandomWorld(10);
-
-			//Helper prints
-			printWorldObjectives();
-			System.out.println("------------------------");
-
+			GenerateRandomWorld(width);
 			currentMapValid = CurrentMapIsValid();
 		}
 
