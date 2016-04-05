@@ -287,10 +287,14 @@ public class WumpusWorld {
 	}
 
 	private void AddPreceptsToMap(){
-		for(int x = 0; x < map.length; x++){
-			for(int y = 0; y < map.length; y++){
-				Tile cur = map[x][y];
+		for(int y = 0; y < map.length; y++){
+			for(int x = 0; x < map.length; x++){
+				Tile cur = map[y][x];
 				ArrayList<Percepts> curPercept = new ArrayList<>();
+
+				if ( map[y][x].getPercepts() == null ) {
+					map[y][x].setPercepts(curPercept);
+				}
 
 				//Determine percept
 				switch ( cur.getObjective() ) {
@@ -306,20 +310,44 @@ public class WumpusWorld {
 				}
 
 				//Set neighbors w/ valid percept
-				if ( x - 1 > 0 && map[x-1][y].getObjective() == Objectives.Empty) {
-					map[x-1][y].setPercepts(curPercept);
+				if ( x - 1 > 0 && map[y][x-1].getObjective() == Objectives.Empty) {
+					for(int i = 0; i < map[y][x-1].getPercepts().length; i++ ) {
+						if ( !curPercept.contains(map[y][x-1].getPercepts()[i])) {
+							curPercept.add(map[y][x-1].getPercepts()[i]);
+						}
+					}
+
+					map[y][x-1].setPercepts(curPercept);
 				}
 
-				if ( x + 1 < (map.length - 1) && map[x+1][y].getObjective() == Objectives.Empty) {
-					map[x+1][y].setPercepts(curPercept);
+				if ( x + 1 < (map.length - 1) && map[y][x+1].getObjective() == Objectives.Empty) {
+					for(int i = 0; i < map[y][x+1].getPercepts().length; i++ ) {
+						if ( !curPercept.contains(map[y][x+1].getPercepts()[i])) {
+							curPercept.add(map[y][x+1].getPercepts()[i]);
+						}
+					}
+
+					map[y][x+1].setPercepts(curPercept);
 				}
 
-				if ( y + 1 < (map.length - 1) && map[x][y+1].getObjective() == Objectives.Empty) {
-					map[x][y+1].setPercepts(curPercept);
+				if ( y + 1 < (map.length - 1) && map[y+1][x].getObjective() == Objectives.Empty) {
+					for(int i = 0; i < map[y+1][x].getPercepts().length; i++ ) {
+						if ( !curPercept.contains(map[y+1][x].getPercepts()[i])) {
+							curPercept.add(map[y+1][x].getPercepts()[i]);
+						}
+					}
+
+					map[y+1][x].setPercepts(curPercept);
 				}
 
-				if ( y - 1 > 0 && map[x][y-1].getObjective() == Objectives.Empty) {
-					map[x][y-1].setPercepts(curPercept);
+				if ( y - 1 > 0 && map[y-1][x].getObjective() == Objectives.Empty) {
+					for(int i = 0; i < map[y-1][x].getPercepts().length; i++ ) {
+						if ( !curPercept.contains(map[y-1][x].getPercepts()[i])) {
+							curPercept.add(map[y-1][x].getPercepts()[i]);
+						}
+					}
+
+					map[y-1][x].setPercepts(curPercept);
 				}
 
 			}
