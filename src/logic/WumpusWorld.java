@@ -26,7 +26,7 @@ public class WumpusWorld {
 	isGameOver = false;
 	 */
 	public WumpusWorld() {
-		Generatemap();
+		GenerateValidWorld(5);
 		isGameOver = false;
 	}
 
@@ -224,48 +224,153 @@ public class WumpusWorld {
 		return isGameOver;
 	}
 
-	//like the map on the website
-	private void Generatemap() {
-		map = new Tile[5][5];
-		for (int i = 0; i < 5; i++) {
-			for (int j = 0; j < 5; j++) {
-				map[i][j] = new Tile(i, j);
+//	//like the map on the website
+//	private void Generatemap() {
+//		map = new Tile[5][5];
+//		for (int i = 0; i < 5; i++) {
+//			for (int j = 0; j < 5; j++) {
+//				map[i][j] = new Tile(i, j);
+//			}
+//		}
+//		setUpObjectives();
+//		setUpPercepts();
+//		playerX = 0;
+//		playerY = 0;
+//		map[playerX][playerY].setVisible();
+//		playerOR = 'e';
+//	}
+//
+//	private void setUpPercepts() {
+//		map[0][1].addPrecept(Percepts.Stench);
+//		map[0][3].addPrecept(Percepts.Stench);
+//		map[0][2].addPrecept(Percepts.Glitter);
+//		map[0][4].addPrecept(Percepts.Breeze);
+//		map[1][0].addPrecept(Percepts.Breeze);
+//		map[1][1].addPrecept(Percepts.Glitter);
+//		map[1][2].addPrecept(Percepts.Stench);
+//		map[1][2].addPrecept(Percepts.Breeze);
+//		map[1][3].addPrecept(Percepts.Breeze);
+//		map[1][3].addPrecept(Percepts.Glitter);
+//		map[2][1].addPrecept(Percepts.Breeze);
+//		map[2][3].addPrecept(Percepts.Breeze);
+//		map[2][4].addPrecept(Percepts.Breeze);
+//		map[3][0].addPrecept(Percepts.Breeze);
+//		map[3][2].addPrecept(Percepts.Breeze);
+//		map[3][4].addPrecept(Percepts.Breeze);
+//		map[4][3].addPrecept(Percepts.Breeze);
+//	}
+//
+//	private void setUpObjectives() {
+//		map[0][2].setObjective(Objectives.Wumpus);
+//		map[1][2].setObjective(Objectives.Gold);
+//		map[1][4].setObjective(Objectives.Pit);
+//		map[2][1].setObjective(Objectives.Pit);
+//		map[2][2].setObjective(Objectives.Pit);
+//		map[3][3].setObjective(Objectives.Pit);
+//	}
+
+	private void GenerateValidWorld(int width){
+//		while ( !CurrentMapIsValid() ) {
+//			//Generate a random world until it's valid
+//			GenerateRandomWorld(width);
+//		}
+
+		GenerateRandomWorld(width);
+
+		//Now add precepts
+		AddPreceptsToMap();
+	}
+
+	private boolean CurrentMapIsValid(){
+		//TODO:
+		return true;
+	}
+
+	private void AddPreceptsToMap(){
+		for(int x = 0; x < map.length; x++){
+			for(int y = 0; y < map.length; y++){
+				Tile cur = map[x][y];
+				ArrayList<Percepts> curPercept = new ArrayList<>();
+
+				//Determine percept
+				switch ( cur.getObjective() ) {
+					case Wumpus:
+						curPercept.add(Percepts.Stench);
+						break;
+					case Pit:
+						curPercept.add(Percepts.Breeze);
+						break;
+					default:
+						break;
+
+				}
+
+				//Set neighbors w/ valid percept
+				if ( x - 1 > 0 && map[x-1][y].getObjective() == Objectives.Empty) {
+					map[x-1][y].setPercepts(curPercept);
+				}
+
+				if ( x + 1 < (map.length - 1) && map[x+1][y].getObjective() == Objectives.Empty) {
+					map[x+1][y].setPercepts(curPercept);
+				}
+
+				if ( y + 1 < (map.length - 1) && map[x][y+1].getObjective() == Objectives.Empty) {
+					map[x][y+1].setPercepts(curPercept);
+				}
+
+				if ( y - 1 > 0 && map[x][y-1].getObjective() == Objectives.Empty) {
+					map[x][y-1].setPercepts(curPercept);
+				}
+
 			}
 		}
-		setUpObjectives();
-		setUpPercepts();
+	}
+
+	private void GenerateRandomWorld(int width){
+		double pitProbability = 0.35; //TODO: Could be a constant at top of file
+
+		map = new Tile[width][width];
+
+		//Choose psuedorandom wumpus location
+		int wumpusX = (int) (Math.random() * width);
+		int wumpusY = (int) (Math.random() * width);
+
+		//Choose psuedorandom gold location
+		int goldX = (int) (Math.random() * width);
+		int goldY = (int) (Math.random() * width);
+
+		//Invalid, lazy restart
+		if ( goldX == wumpusX && goldY == wumpusY ) {
+			return;
+		}
+
+		//Generate map
+		for(int y = 0; y < width; y++){
+			for(int x = 0; x < width; x++) {
+				Tile curTile = new Tile(x,y);
+
+				//Simple psuedorandom pit generator.
+				//If a random number between 1 and 100 is less than or equal to our probability
+				boolean isPit =  ((int) (Math.random() * 100)) <= ((int)(pitProbability * 100));
+
+				//Place one objective max per tile
+				if ( x == wumpusX && y == wumpusY ) {
+					curTile.setObjective(Objectives.Wumpus);
+				} else if ( x == goldX && y == goldY ){
+					curTile.setObjective(Objectives.Gold);
+				} else if ( isPit ) {
+					curTile.setObjective(Objectives.Pit);
+				} else {
+					curTile.setObjective(Objectives.Empty);
+				}
+
+				map[x][y] = curTile;
+			}
+		}
+
 		playerX = 0;
 		playerY = 0;
 		map[playerX][playerY].setVisible();
 		playerOR = 'e';
-	}
-
-	private void setUpPercepts() {
-		map[0][1].addPrecept(Percepts.Stench);
-		map[0][3].addPrecept(Percepts.Stench);
-		map[0][2].addPrecept(Percepts.Glitter);
-		map[0][4].addPrecept(Percepts.Breeze);
-		map[1][0].addPrecept(Percepts.Breeze);
-		map[1][1].addPrecept(Percepts.Glitter);
-		map[1][2].addPrecept(Percepts.Stench);
-		map[1][2].addPrecept(Percepts.Breeze);
-		map[1][3].addPrecept(Percepts.Breeze);
-		map[1][3].addPrecept(Percepts.Glitter);
-		map[2][1].addPrecept(Percepts.Breeze);
-		map[2][3].addPrecept(Percepts.Breeze);
-		map[2][4].addPrecept(Percepts.Breeze);
-		map[3][0].addPrecept(Percepts.Breeze);
-		map[3][2].addPrecept(Percepts.Breeze);
-		map[3][4].addPrecept(Percepts.Breeze);
-		map[4][3].addPrecept(Percepts.Breeze);
-	}
-
-	private void setUpObjectives() {
-		map[0][2].setObjective(Objectives.Wumpus);
-		map[1][2].setObjective(Objectives.Gold);
-		map[1][4].setObjective(Objectives.Pit);
-		map[2][1].setObjective(Objectives.Pit);
-		map[2][2].setObjective(Objectives.Pit);
-		map[3][3].setObjective(Objectives.Pit);
 	}
 }
