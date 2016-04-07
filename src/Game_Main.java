@@ -13,6 +13,7 @@ import graphics.Mouse;
 import graphics.MousePos;
 import graphics.Player;
 import graphics.Shader;
+import graphics.Texture;
 import graphics.Window;
 import graphics.GLPanel.Orientation;
 import logic.Objectives;
@@ -34,7 +35,8 @@ public class Game_Main {
 	
 	GLPanel panel;
 	
-	private boolean running = false;
+	private boolean running = true;
+	private boolean startScreen = true;
 	private WumpusWorld world;
 	private WumpusWorld.Difficulty difficulty = Difficulty.easy;
 	private Player player;
@@ -77,16 +79,17 @@ public class Game_Main {
 		long elapsedTime = 0;
 		
 		//Display start/difficulty screen:
-		while(!running){
+		while(startScreen && running){
 			Window.clear();
 			panel.Draw();
 			if(Mouse.getMouse(Mouse.LEFT_CLICK)){
 				Vector2f screen = MousePos.getMousePosition();
 				Vector2f ndc = new Vector2f(screen.x / windowWidth * 2.0f - 1.0f, screen.y / windowHeight * -2.0f + 1.0f);
-				System.out.println("" + ndc.x  + " , " + ndc.y);
+				//System.out.println("" + ndc.x  + " , " + ndc.y);
 				panel.CheckClicked(ndc);
 			}
 			Window.render();
+			checkClose();
 		}
 		
 		//Set game difficulty:
@@ -118,6 +121,12 @@ public class Game_Main {
 		panel.Deallocate();
 		
 		Window.dispose();
+	}
+	
+	private void checkClose(){
+		if(Window.isCloseRequested()){
+			running = false;
+		}
 	}
 	
 	/**
@@ -230,19 +239,6 @@ public class Game_Main {
 	public void render() {
 		Window.clear();
 		
-//		for(int y = 0; y < boardSize; y++) {
-//			for (int x = 0; x < boardSize; x++) {
-//				if (world.getTile(x, y).isVisible()) {
-//					int offset = x + y * boardSize;
-//					
-//					// this calculation fixes the indexing bug
-//					offset += (20 - (y * boardSize * 2));
-//					
-//					gridPanels.get((offset)).Draw();
-//				}
-//			}
-//		}
-		
 		for(GLPanel panel : gridPanels){
 			panel.Draw();
 		}
@@ -324,7 +320,8 @@ public class Game_Main {
 
 			@Override
 			public void OnClick() {
-				running = true;
+				//running = true;
+				startScreen = false;
 				System.out.println("start");
 			}
 			
@@ -336,11 +333,20 @@ public class Game_Main {
 		difficultyPanel.Translate(new Vector3f(-.4f, -.2f, 0.0f));
 		
 		GLView easyBtn = new GLView(.2f, .2f);
-		easyBtn.SetTexture("res/sprites/easy.PNG");
 		GLView mediumBtn = new GLView(.25f, .2f);
-		mediumBtn.SetTexture("res/sprites/medium.PNG");
 		GLView hardBtn = new GLView(.2f, .2f);
-		hardBtn.SetTexture("res/sprites/hard.PNG");
+		
+		final Texture easyUnselected = new Texture("res/sprites/easy.PNG");
+		final Texture mediumUnselected = new Texture("res/sprites/medium.PNG");
+		final Texture hardUnselected = new Texture("res/sprites/hard.PNG");
+		final Texture easySelected = new Texture("res/sprites/easySelected.PNG");
+		final Texture mediumSelected = new Texture("res/sprites/mediumSelected.PNG");
+		final Texture hardSelected = new Texture("res/sprites/hardSelected.PNG");
+		
+		easyBtn.SetTexture(easySelected);
+		mediumBtn.SetTexture(mediumUnselected);
+		hardBtn.SetTexture(hardUnselected);
+		
 		
 		difficultyPanel.AddView(easyBtn);
 		easyBtn.SetListener(new ClickListener(){
@@ -348,7 +354,11 @@ public class Game_Main {
 			@Override
 			public void OnClick() {
 				difficulty = Difficulty.easy;
-				System.out.println("easy");
+				easyBtn.SetTexture(easySelected);
+				mediumBtn.SetTexture(mediumUnselected);
+				hardBtn.SetTexture(hardUnselected);
+				
+				//System.out.println("easy");
 			}
 			
 		});
@@ -359,7 +369,11 @@ public class Game_Main {
 			@Override
 			public void OnClick() {
 				difficulty = Difficulty.medium;
-				System.out.println("medium");
+				easyBtn.SetTexture(easyUnselected);
+				mediumBtn.SetTexture(mediumSelected);
+				hardBtn.SetTexture(hardUnselected);
+				
+				//System.out.println("medium");
 			}
 			
 		});
@@ -370,7 +384,12 @@ public class Game_Main {
 			@Override
 			public void OnClick() {
 				difficulty = Difficulty.hard;
-				System.out.println("hard");
+				easyBtn.SetTexture(easyUnselected);
+				mediumBtn.SetTexture(mediumUnselected);
+				hardBtn.SetTexture(hardSelected);
+				
+				
+				//System.out.println("hard");
 			}
 			
 		});

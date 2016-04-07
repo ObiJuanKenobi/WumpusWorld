@@ -53,6 +53,10 @@ public class GLView {
 		texture = new Texture(path);
 	}
 	
+	public void SetTexture(Texture texture){
+		this.texture = texture;
+	}
+	
 	public void SetWidth(float width) {
 		this.mWidth = width;
 	}
