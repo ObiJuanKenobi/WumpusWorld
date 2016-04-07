@@ -1,18 +1,24 @@
 import java.util.ArrayList;
 import java.util.Collection;
 
+import javax.swing.JButton;
+
 import org.lwjgl.opengl.GL11;
 
 import graphics.GLIcon;
 import graphics.GLPanel;
+import graphics.GLView;
+import graphics.GLView.ClickListener;
 import graphics.Mouse;
 import graphics.MousePos;
 import graphics.Player;
 import graphics.Shader;
 import graphics.Window;
+import graphics.GLPanel.Orientation;
 import logic.Objectives;
 import logic.Percepts;
 import logic.WumpusWorld;
+import logic.WumpusWorld.Difficulty;
 import math.Vector2f;
 import math.Vector3f;
 import math.Vector4f;
@@ -26,12 +32,15 @@ public class Game_Main {
 	private final int UPDATES_PER_SEC = 60;
 	private final int UPDATE_TIME_NS = 1000000000 / UPDATES_PER_SEC;
 	
+	GLPanel panel;
+	
 	private boolean running = false;
 	private WumpusWorld world;
+	private WumpusWorld.Difficulty difficulty = Difficulty.easy;
 	private Player player;
 	
 	private ArrayList<GLPanel> gridPanels = new ArrayList<GLPanel>();
-	private int windowWidth = 1200, windowHeight = 1200;
+	private int windowWidth = 600, windowHeight = 600;
 	private float panelWidth, panelHeight;
 	
 	private static int boardSize = 5;
@@ -55,8 +64,6 @@ public class Game_Main {
 		Shader.loadAll();
 		Shader.PLAYER.setUniform1i("tex", 1);
 		
-		world = new WumpusWorld();
-		player = new Player(world.getPlayerPosition().x, world.getPlayerPosition().y);
 		initPanels(boardSize);
 		
 		System.out.println("Welcome to the Wumpus World!");
@@ -68,7 +75,28 @@ public class Game_Main {
 	public void run() {
 		long startTime = System.nanoTime();
 		long elapsedTime = 0;
+		
+		//Display start/difficulty screen:
+		while(!running){
+			Window.clear();
+			panel.Draw();
+			if(Mouse.getMouse(Mouse.LEFT_CLICK)){
+				Vector2f screen = MousePos.getMousePosition();
+				Vector2f ndc = new Vector2f(screen.x / windowWidth * 2.0f - 1.0f, screen.y / windowHeight * -2.0f + 1.0f);
+				System.out.println("" + ndc.x  + " , " + ndc.y);
+				panel.CheckClicked(ndc);
+			}
+			Window.render();
+		}
+		
+		//Set game difficulty:
+		world = new WumpusWorld(difficulty);
+		player = new Player(world.getPlayerPosition().x, world.getPlayerPosition().y);
+		
+		//Prevent player from moving while board is rendering
+		Mouse.buttons[0] = false;
 
+		//Begin game:
 		while(running && !world.isGameOver()) {
 			elapsedTime = System.nanoTime() - startTime;
 			
@@ -86,6 +114,8 @@ public class Game_Main {
 		for(GLPanel panel : gridPanels){
 			panel.Deallocate();
 		}
+		
+		panel.Deallocate();
 		
 		Window.dispose();
 	}
@@ -138,6 +168,7 @@ public class Game_Main {
 		}
 		
 		player.update(world.getPlayerOrientation());
+		world.hasGold();
 		
 		//Update tiles: 
 		
@@ -230,7 +261,8 @@ public class Game_Main {
 	 * Intuitive method to set running flag and enter run loop
 	 */
 	public void start() {
-		running = true;
+		initStartScreen();
+		//running = true;
 		run();
 	}
 	
@@ -274,5 +306,77 @@ public class Game_Main {
 		
 		panelWidth = windowWidth / dimension;
 		panelHeight = windowHeight / dimension;
+	}
+	
+	private void initStartScreen(){
+		Window.clear();
+		 
+		panel = new GLPanel(2.0f, 2.0f, Orientation.vertical, .85f, .5f, .05f);
+		panel.SetTexture("res/sprites/difficultyTexture.jpg");
+		panel.Translate(new Vector3f(-1.0f, -1.0f, 0.0f));
+		
+		GLView startBtn = new GLView(.3f, .3f);
+		startBtn.SetTexture("res/sprites/start.PNG");
+		//startBtn.InitBuffers();
+		panel.AddView(startBtn);
+		startBtn.Translate(new Vector3f(-.15f, .2f, 0.0f));
+		startBtn.SetListener(new ClickListener(){
+
+			@Override
+			public void OnClick() {
+				running = true;
+				System.out.println("start");
+			}
+			
+		});
+		
+		GLPanel difficultyPanel = new GLPanel(.85f, .4f, GLPanel.Orientation.horizontal, .05f, .05f, .05f);
+		difficultyPanel.SetTexture("res/sprites/difficultyTexture.jpg");
+		panel.AddView(difficultyPanel);
+		difficultyPanel.Translate(new Vector3f(-.4f, -.2f, 0.0f));
+		
+		GLView easyBtn = new GLView(.2f, .2f);
+		easyBtn.SetTexture("res/sprites/easy.PNG");
+		GLView mediumBtn = new GLView(.25f, .2f);
+		mediumBtn.SetTexture("res/sprites/medium.PNG");
+		GLView hardBtn = new GLView(.2f, .2f);
+		hardBtn.SetTexture("res/sprites/hard.PNG");
+		
+		difficultyPanel.AddView(easyBtn);
+		easyBtn.SetListener(new ClickListener(){
+
+			@Override
+			public void OnClick() {
+				difficulty = Difficulty.easy;
+				System.out.println("easy");
+			}
+			
+		});
+		
+		difficultyPanel.AddView(mediumBtn);
+		mediumBtn.SetListener(new ClickListener(){
+
+			@Override
+			public void OnClick() {
+				difficulty = Difficulty.medium;
+				System.out.println("medium");
+			}
+			
+		});
+		
+		difficultyPanel.AddView(hardBtn);
+		hardBtn.SetListener(new ClickListener(){
+
+			@Override
+			public void OnClick() {
+				difficulty = Difficulty.hard;
+				System.out.println("hard");
+			}
+			
+		});
+		//difficultyPanel.InitBuffers();
+		panel.InitBuffers();
+		
+		Window.render();
 	}
 }

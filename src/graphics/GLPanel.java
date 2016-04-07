@@ -48,6 +48,20 @@ public class GLPanel extends GLView {
 		isPanel = true;
 	}
 	
+	public boolean CheckClicked(Vector2f clickPt){
+		for(GLView subview : mSubviews){
+			if(subview.CheckClicked(clickPt)){
+				subview.OnClick();
+				return true;
+			}
+		}
+		return super.CheckClicked(clickPt);
+	}
+	
+	public void OnClick(){
+		
+	}
+	
 	public GLPanel(float width, float height, Orientation orientation, 
 			float xPadding, float yPadding, float viewSpacing, int xIndex, int yIndex) {
 		

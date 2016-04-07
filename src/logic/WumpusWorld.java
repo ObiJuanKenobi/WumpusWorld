@@ -23,13 +23,19 @@ public class WumpusWorld {
 	private char playerOR;
 	private boolean isGameOver;
 	private boolean hasGold;
+	
+	public enum Difficulty {easy, medium, hard};
+	
+	private Difficulty difficulty;
 
 	/**
 	 * Creates a hardcoded 5x5 wumpus world map
 	 * Player starts at 0,0 and has an Orientation 'e'
 	isGameOver = false;
 	 */
-	public WumpusWorld() {
+	public WumpusWorld(Difficulty difficulty) {
+		this.difficulty = difficulty;
+		
 		GenerateValidWorld(5);
 
 		playerX = 0;
@@ -134,7 +140,7 @@ public class WumpusWorld {
 	public boolean hasWon(){
 		Objectives obj = map[playerX][playerY].getObjective();
 		
-		if(obj == Objectives.Latter && hasGold){
+		if(obj == Objectives.Ladder && hasGold){
 			return true;
 		}
 		return false;
@@ -243,6 +249,11 @@ public class WumpusWorld {
 		case Pit:
 			isGameOver = true;
 			return isGameOver;
+		case Ladder:
+			if(hasGold()){
+				System.out.println("You win!");
+				isGameOver = true;
+			}
 		default:
 			return isGameOver;
 		}
@@ -317,7 +328,7 @@ public class WumpusWorld {
 				goldFound = true;
 			}
 
-			if ( curTile.getObjective() == Objectives.Latter ) {
+			if ( curTile.getObjective() == Objectives.Ladder ) {
 				latterFound = true;
 			}
 
@@ -372,7 +383,17 @@ public class WumpusWorld {
 	 * @param width
      */
 	boolean GenerateRandomWorld(int width){
-		double pitProbability = 0.50; //TODO: Could be a constant at top of file
+		
+		double pitProbability = 0.0;
+		if(difficulty == Difficulty.easy){
+			pitProbability = 0.30;
+		}
+		else if(difficulty == Difficulty.medium){
+			pitProbability = .55;
+		}
+		else {
+			pitProbability = .75;
+		}
 
 		map = new Tile[width][width];
 
@@ -434,7 +455,7 @@ public class WumpusWorld {
 				} else if (x == goldX && y == goldY) {
 					curTile.setObjective(Objectives.Gold);
 				} else if (x == latterX && y == latterY ) {
-					curTile.setObjective(Objectives.Latter);
+					curTile.setObjective(Objectives.Ladder);
 				} else if ( isPit ) {
 					curTile.setObjective(Objectives.Pit);
 				} else {

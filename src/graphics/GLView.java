@@ -16,6 +16,10 @@ import math.Vector4f;
 
 public class GLView {
 	
+	public interface ClickListener {
+		void OnClick();
+	}
+	
 	protected float mHeight;
 	protected float mWidth;
 	
@@ -31,6 +35,8 @@ public class GLView {
 	protected VertexArray vertexArray;
 	
 	protected Texture texture;
+	
+	protected ClickListener listener;
 
 	public GLView(float width, float height) {
 		this.mWidth = width;
@@ -81,6 +87,16 @@ public class GLView {
 	public boolean CheckClicked(Vector2f clickPt) {
 		return (clickPt.getX() >= this.mPosition.x && clickPt.x <= this.mPosition.x + this.mWidth)
 				&& (clickPt.y >= this.mPosition.y && clickPt.y <= this.mPosition.y + this.mHeight);
+	}
+	
+	public void OnClick(){
+		if(listener != null){
+			listener.OnClick();
+		}
+	}
+	
+	public void SetListener(ClickListener listener){
+		this.listener = listener;
 	}
 	
 	public void InitBuffers(){

@@ -1,5 +1,5 @@
 package logic;
 
 public enum Objectives {
-	Wumpus, Gold, Pit, Empty, Latter;
+	Wumpus, Gold, Pit, Empty, Ladder;
 }
