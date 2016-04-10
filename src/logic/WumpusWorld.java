@@ -6,13 +6,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 /**
- * @author Paul
- * @author Juan
- * 
- * TODO: Get Surrounding Percepts based on where the player is
- * TODO: Handle Player & Objectives interaction 
- * TODO: Handle Game Over
- * TODO: Handle Game Won
+ * @author Team Bitz please
+ *
  */
 
 public class WumpusWorld {
@@ -20,16 +15,17 @@ public class WumpusWorld {
 	private Tile[][] map;
 	private int playerX;
 	private int playerY;
-	private char playerOR;
+	private char playerOrientation;
 	private boolean isGameOver;
 	private boolean hasGold;
 	
-	public enum Difficulty {easy, medium, hard};
+	public enum Difficulty {easy, medium, hard}
 	
 	private Difficulty difficulty;
 
 	/**
-	 * Creates a hardcoded 5x5 wumpus world map
+	 * Creates a pseudorandomly generated widthxwidth world
+     * 
 	 * Player starts at 0,0 and has an Orientation 'e'
 	isGameOver = false;
 	 */
@@ -41,7 +37,7 @@ public class WumpusWorld {
 		playerX = 0;
 		playerY = 0;
 		map[playerX][playerY].setVisible();
-		playerOR = 'e';
+		playerOrientation = 'e';
 
 		isGameOver = false;
 	}
@@ -57,14 +53,6 @@ public class WumpusWorld {
 	}
 
 	/**
-	 * Returns the entire map
-	 * @return Tile[][]
-	 */
-	public Tile[][] getmap() {
-		return map;
-	}
-	
-	/**
 	 * Moves the player based on the direction
 	 * if the player orientation is different the direction
 	 * then change the orientation
@@ -75,7 +63,7 @@ public class WumpusWorld {
 		switch (direction) {
 		// move up
 		case 0:
-			if (playerOR == 's') {
+			if (playerOrientation == 's') {
 				// actually move
 				if(isValidMove(0)){
 					playerY++;
@@ -86,12 +74,12 @@ public class WumpusWorld {
 				return false;
 			} else {
 				// set orientation
-				playerOR = 's';
+				playerOrientation = 's';
 				return false;
 			}
 		// move right
 		case 1:
-			if (playerOR == 'e') {
+			if (playerOrientation == 'e') {
 				if(isValidMove(1)){
 					playerX++;
 					map[playerX][playerY].setVisible();
@@ -100,12 +88,12 @@ public class WumpusWorld {
 				
 				return false;
 			} else {
-				playerOR = 'e';
+				playerOrientation = 'e';
 				return false;
 			}
 		// move down
 		case 2:
-			if (playerOR == 'n') {
+			if (playerOrientation == 'n') {
 				if(isValidMove(2)){
 					playerY--;
 					map[playerX][playerY].setVisible();
@@ -114,12 +102,12 @@ public class WumpusWorld {
 				
 				return false;
 			} else {
-				playerOR = 'n';
+				playerOrientation = 'n';
 				return false;
 			}
 		// move left
 		case 3:
-			if (playerOR == 'w') {
+			if (playerOrientation == 'w') {
 				if(isValidMove(3)){
 					playerX--;
 					map[playerX][playerY].setVisible();
@@ -128,7 +116,7 @@ public class WumpusWorld {
 				
 				return false;
 			} else {
-				playerOR = 'w';
+				playerOrientation = 'w';
 				return false;
 			}
 		default:
@@ -136,16 +124,11 @@ public class WumpusWorld {
 		}
 		
 	}
-	
-	public boolean hasWon(){
-		Objectives obj = map[playerX][playerY].getObjective();
-		
-		if(obj == Objectives.Ladder && hasGold){
-			return true;
-		}
-		return false;
-	}
-	
+
+    /**
+     * Whether the tile at the current players position has the gold
+     * @return
+     */
 	public boolean hasGold(){
 		Objectives obj = map[playerX][playerY].getObjective();
 		
@@ -156,20 +139,36 @@ public class WumpusWorld {
 		return hasGold;
 	}
 
+    /**
+     * X,Y position of player
+     * @return
+     */
 	public Point getPlayerPosition() {
 		return new Point(playerX, playerY);
 	}
 
+    /**
+     * X coordinate of player
+     * @return
+     */
 	public int getPlayerX() {
 		return playerX;
 	}
 
+    /**
+     * Y coordinate of player
+     * @return
+     */
 	public int getPlayerY() {
 		return playerY;
 	}
 
-	public char getPlayerOrientation() {
-		return playerOR;
+    /**
+     * Current orientation of the player
+     * @return
+     */
+	public char getplayerOrientation() {
+		return playerOrientation;
 	}
 	
 	/**
@@ -210,60 +209,56 @@ public class WumpusWorld {
 		
 		return percepts;
 	}
-	
+
+    /**
+     * Returns whether or not the desired move is valid.
+     * 0 -> Down
+     * 1 -> Right
+     * 2 -> Up
+     * 3 -> Left
+     *
+     * @param move
+     * @return
+     */
 	public boolean isValidMove(int move){
 		switch (move){
 		case 0:
-			if(playerY + 1 <= 4){
-				return true;
-			}
-			return false;
+			return playerY + 1 < map.length;
 		case 1:
-			if(playerX + 1 <= 4){
-				return true;
-			}
-			return false;
+            return playerX + 1 < map.length;
 		case 2: 
-			if(playerY - 1 >= 0){
-				return true;
-			}
-			return false;
+			return playerY - 1 >= 0;
 		case 3: 
-			if(playerX - 1 >= 0){
-				return true;
-			}
-			return false;
+			return playerX - 1 >= 0;
 		default:
 			return false;
 		}
 	}
-	
+
+    /**
+     * Return whether or not the game has ended
+     * @return
+     */
 	public boolean isGameOver(){
 		Objectives obj = map[playerX][playerY].getObjective();
-		
-		switch(obj){
-		
-		case Wumpus:
-			isGameOver = true;
-			return isGameOver;
-		case Pit:
-			isGameOver = true;
-			return isGameOver;
-		case Ladder:
-			if(hasGold()){
-				System.out.println("You win!");
-				isGameOver = true;
-			}
-		default:
-			return isGameOver;
-		}
-		
+
+        if (obj == Objectives.Wumpus || obj == Objectives.Pit || obj == Objectives.Ladder)
+            isGameOver = true;
+
+        return isGameOver;
 	}
 
-	public boolean getGameOver(){
-		return isGameOver;
-	}
+    /**
+     * Whether or not we have won the game
+     * @return
+     */
+    public boolean haveWon(){
+        return map[playerX][playerY].getObjective() == Objectives.Gold;
+    }
 
+    /**
+     * Used for testing purposes to print the objective at each tile in the map
+     */
 	private void printWorldObjectives(){
 		for(int y = 0; y < map.length; y++){
 			for(int x = 0; x < map.length; x++){
@@ -380,20 +375,21 @@ public class WumpusWorld {
 
 	/**
 	 * Generate a random width x width world with pit probability pitProbabily
+	 *
+	 * Could be c
 	 * @param width
      */
-	boolean GenerateRandomWorld(int width){
+	private boolean GenerateRandomWorld(int width){
 		
-		double pitProbability = 0.0;
+		double pitProbability = 0.75;
+
 		if(difficulty == Difficulty.easy){
 			pitProbability = 0.30;
 		}
 		else if(difficulty == Difficulty.medium){
 			pitProbability = .55;
 		}
-		else {
-			pitProbability = .75;
-		}
+
 
 		map = new Tile[width][width];
 
@@ -408,7 +404,7 @@ public class WumpusWorld {
 		int latterY = (int) (Math.random() * width);
 
 
-		//TODO: Prettier collision prevention?
+		//TODO: Prettier 'collision' prevention?
 		// Wumpus on gold, lazy restart
 		if ( goldX == wumpusX && goldY == wumpusY ) {
 			return false;
