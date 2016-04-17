@@ -6,9 +6,6 @@ import java.io.PrintWriter;
 import java.net.Socket;
 
 public class Client {
-	PrintWriter outToServer;
-	static BufferedReader fromServer;
-	
 	
 	public static void main(String[] args){
 		String hostName = "localHost";
@@ -16,13 +13,11 @@ public class Client {
 		
 		try{
 			Socket clientSocket = new Socket(hostName, portNumber);
-			fromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream());
-			String fromServer, toServer;
-			
-			
-			
+			new clientListener(clientSocket).start();
+					
 		}catch(Exception e){
-			
+			System.err.println("Could not create a client or client listener");
+			System.exit(-1);
 		}
 	}
 
