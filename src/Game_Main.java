@@ -164,7 +164,7 @@ public class Game_Main {
 			// print player's status
 			player.setPosition(world.getPlayerX(), world.getPlayerY());
 			System.out.println("Location: " + world.getPlayerX() + ", " + world.getPlayerY());
-			System.out.println("Direction: " + world.getPlayerOrientation());			
+			System.out.println("Direction: " + world.getplayerOrientation());			
 			System.out.println();
 			
 			
@@ -176,7 +176,7 @@ public class Game_Main {
 			}
 		}
 		
-		player.update(world.getPlayerOrientation());
+		player.update(world.getplayerOrientation());
 		world.hasGold();
 		
 		//Update tiles: 
