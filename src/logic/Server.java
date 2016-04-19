@@ -22,7 +22,9 @@ public class Server {
 				connectedClients[1] = client2;
 				
 				new ServerThread(client1).start();
+				printf("Client 1 has connected");
 				new ServerThread(client2).start();
+				printf("Client 2 has connected");
 		
 			}
 		}catch(Exception e){
@@ -30,6 +32,10 @@ public class Server {
 			System.exit(-1);
 		}
 
+	}
+	
+	public static void printf(String x){
+		System.out.println(x);
 	}
 
 }
