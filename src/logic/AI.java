@@ -1,22 +1,27 @@
 package logic;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
 
 /**
  * Created by paulgerlich on 4/9/16.
  */
 public class AI {
-    static final int DOWN = 0, RIGHT = 1, UP = 2, LEFT = 3;
+    private static final int DOWN = 0, RIGHT = 1, UP = 2, LEFT = 3;
 
-    WumpusWorld wumpusWorld;
-    boolean haveFoundGold = false;
-    ArrayList<ArrayList<Tile>> map = new ArrayList<>();
-    private int x = 0;
-    private int y = 0;
+    private WumpusWorld wumpusWorld;
+    private boolean haveFoundGold = false;
+    private Tile ladder;
+    private HashMap<String, Tile> knownLocations = new HashMap<>();
+    private int currentX = 0;
+    private int currentY = 0;
+    private ArrayList<Integer> pathToLadder;
 
     public AI(WumpusWorld world, WumpusWorld.Difficulty difficulty){
         if ( difficulty == null ) {
-            difficulty = WumpusWorld.Difficulty.hard;
+            difficulty = WumpusWorld.Difficulty.easy;
         }
 
         if ( world == null ) {
@@ -27,53 +32,118 @@ public class AI {
     }
 
     public void play(){
-        boolean playing = true;
 
-        while ( playing ) {
-            // Analyze current tile, add to memory
-            // Choose & execute next move
+        while ( !wumpusWorld.haveWon() && !wumpusWorld.isGameOver() ) {
+            consumeCurrentTile();
+            wumpusWorld.move(getNextMove());
         }
     }
 
     /**
-     * Add the
+     * Add the tiles perceptions to our perceptions.
      */
     private void consumeCurrentTile(){
-        Tile tile = new Tile(x, y);
+        Tile tile = new Tile(currentX, currentY);
         tile.setPercepts(new ArrayList<>(wumpusWorld.getPerceptions()));
 
-        map.get(y).add(x, wumpusWorld.getTile(x,y));
-    }
+        switch ( tile.getObjective() ) {
+            case Gold:
+                haveFoundGold = true;
+                break;
+            case Ladder:
+                ladder = tile;
+                break;
+            default:
+                break;
+        }
 
-    private void assessMapInformation(){
-        //Proccess the new perceptions we recieved in map[y][x]
-        // - Can we deduct something exists above me?
-        // - Can we deduct something exists to the right of me?
-        // - Below me?
-        // - Left of me?
+        knownLocations.put(String.valueOf(currentX) + '+' + String.valueOf(currentY), tile);
     }
 
     /**
-     * Determine which move to take
+     * Niavely assess a tile for its probability of containing a wumpus or pit
+     * @param x
+     * @param y
+     * @return
+     */
+    private DangerProbabilities getTileDangerProbability(int x, int y){
+        DangerProbabilities dp = new DangerProbabilities();
+
+
+        String[] keys = {String.valueOf(x) + '+' + String.valueOf(y-1), String.valueOf(x) + '+' + String.valueOf(y+1),
+                String.valueOf(x+1) + '+' + String.valueOf(y), String.valueOf(x-1) + '+' + String.valueOf(y)};
+
+        for(int i = 0; i < keys.length; i++ ) {
+            //Check above
+            if ( knownLocations.containsKey(keys[i]) ) {
+                ArrayList<Percepts> curPercepts = new ArrayList<>(Arrays.asList(knownLocations.get(keys[i]).getPercepts()));
+
+                if ( curPercepts.size() == 0 ) {
+                    dp.pitProbability = 0;
+                    dp.wumpusProbability = 0;
+                    return dp;
+                }
+
+                if ( curPercepts.contains(Percepts.Breeze) ) {
+                    dp.pitProbability += 0.25;
+                }
+
+                if ( curPercepts.contains(Percepts.Stench) ) {
+                    dp.wumpusProbability += 0.25;
+                }
+            }
+        }
+
+        return dp;
+    }
+
+    /**
+     * Determine which move to take (Greedy, local)
      * @return Next move direction
      */
     private int getNextMove(){
-        Tile currentTile = getCurrentTile();
+        int move = DOWN;
+
         ArrayList<Integer> availableMoveOptions = getAvailableMoveOptions();
+        ArrayList<DangerProbabilities> dp = new ArrayList<>();
 
+        // Get danger probabilities for the available moves
+        if ( availableMoveOptions.contains(UP) ) {
+            dp.add(getTileDangerProbability(currentX, currentY - 1));
+        }
 
+        if ( availableMoveOptions.contains(DOWN) ) {
+            dp.add(getTileDangerProbability(currentX, currentY + 1));
+        }
 
+        if ( availableMoveOptions.contains(RIGHT) ) {
+            dp.add(getTileDangerProbability(currentX + 1, currentY));
+        }
 
-        return DOWN;
+        if ( availableMoveOptions.contains(LEFT) ) {
+            dp.add(getTileDangerProbability(currentX - 1, currentY));
+        }
+
+        //TODO: Sort by probability but maintain a pairing between the direction and probability
+
+        if ( haveFoundGold && ladder != null ) {
+            if ( pathToLadder == null ) {
+                pathToLadder = getPathToLadder();
+            } else {
+                move = pathToLadder.get(0);
+                pathToLadder.remove(0);
+            }
+        } else {
+           for(int i = 0; i < availableMoveOptions.size(); i++ ) {
+                //If we haven't seen it, choose this option
+           }
+        }
+
+        return move;
     }
 
-
-    /**
-     * The current tile the user is on
-     * @return Current player position tile
-     */
-    private Tile getCurrentTile(){
-        return map.get(y).get(x);
+    private ArrayList<Integer> getPathToLadder(){
+        return null;
     }
 
     /**
@@ -101,4 +171,10 @@ public class AI {
 
         return options;
     }
+
+    class DangerProbabilities {
+        double pitProbability = 0.0;
+        double wumpusProbability = 0.0;
+    }
+
 }
