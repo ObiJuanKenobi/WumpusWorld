@@ -25,7 +25,21 @@ public class ServerThread extends Thread {
 		try {
 			String inputLine, outputLine;
 			while ((inputLine = fromClient.readLine()) != null) {
-				//do some stuff
+				String lines[] = inputLine.split(":");
+				if(lines[0] == "STATUS"){
+					if(lines[1] == "connection"){
+						if(Server.connectedClients[1] != null){
+							toClient.print("true");
+							toClient.flush();
+						}else{
+							toClient.print("false");
+							toClient.flush();
+						}
+					}
+					
+				}else if(lines[0] == "COMMAND"){
+					
+				}
 			}
 		}
 

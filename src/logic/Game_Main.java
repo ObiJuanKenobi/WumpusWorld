@@ -3,6 +3,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -32,6 +33,7 @@ public class Game_Main {
 	private final int UPDATES_PER_SEC = 60;
 	private final int UPDATE_TIME_NS = 1000000000 / UPDATES_PER_SEC;
 	
+	boolean connectionFlag, turn;
 	Socket client;
 	String hostName = "localHost";
 	int portNumber = 1234;
@@ -73,6 +75,7 @@ public class Game_Main {
 			System.out.println("Successfully set up client");
 		}catch(Exception e){
 			System.err.println("Error in setting up sockets in Game main constructor");
+			System.out.println("Going offline");
 		}
 		
 		Window.createWindow(windowWidth, windowHeight, "Wumpus World - Game");
@@ -106,6 +109,7 @@ public class Game_Main {
 			}
 			Window.render();
 			checkClose();
+			
 		}
 		
 		//Set game difficulty:
@@ -413,5 +417,27 @@ public class Game_Main {
 		panel.InitBuffers();
 		
 		Window.render();
+	}
+	
+	private void checkConnection(){
+		try{
+			toSend = "STATUS:connection";
+			toServer.print(toSend);
+			toServer.flush();
+			
+			while((recieved = fromServer.readLine())!= null){
+				if(recieved == "true"){
+					connectionFlag = true;
+					return;
+				}else{
+					connectionFlag = false;
+					System.out.println("Waiting for another user to connect");
+					return;
+				}
+			}
+		}catch(Exception e){
+			System.out.println("Could not contact server");
+			e.printStackTrace();
+		}
 	}
 }
