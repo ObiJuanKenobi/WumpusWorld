@@ -23,6 +23,8 @@ public class WumpusWorld {
 	
 	private Difficulty difficulty;
 
+	private boolean debug = true;
+
 	/**
 	 * Creates a pseudorandomly generated widthxwidth world
      * 
@@ -61,16 +63,18 @@ public class WumpusWorld {
 	 */
 	public boolean move(int direction) {
 		switch (direction) {
-		// move up
+		// move down
 		case 0:
 			if (playerOrientation == 's') {
 				// actually move
 				if(isValidMove(0)){
 					playerY++;
 					map[playerX][playerY].setVisible();
+                    hasGold();
 					return true;
 				}
-				
+
+				debug("Invalid up");
 				return false;
 			} else {
 				// set orientation
@@ -83,23 +87,27 @@ public class WumpusWorld {
 				if(isValidMove(1)){
 					playerX++;
 					map[playerX][playerY].setVisible();
+                    hasGold();
 					return true;
 				}
-				
+
+                debug("Invalid right");
 				return false;
 			} else {
 				playerOrientation = 'e';
 				return false;
 			}
-		// move down
+		// move up
 		case 2:
 			if (playerOrientation == 'n') {
 				if(isValidMove(2)){
 					playerY--;
 					map[playerX][playerY].setVisible();
+                    hasGold();
 					return true;
 				}
-				
+
+                debug("Invalid down");
 				return false;
 			} else {
 				playerOrientation = 'n';
@@ -111,9 +119,12 @@ public class WumpusWorld {
 				if(isValidMove(3)){
 					playerX--;
 					map[playerX][playerY].setVisible();
-					return false;
+                    hasGold();
+					return true;
 				}
-				
+
+                isGameOver = true;
+                debug("Invalid left " + String.valueOf(playerX) + " " + String.valueOf(playerY));
 				return false;
 			} else {
 				playerOrientation = 'w';
@@ -175,15 +186,17 @@ public class WumpusWorld {
 	 * Checks surrounding tiles for objectives
 	 * @return ArrayList of the perceived objectives
 	 */
-	public Collection<Percepts> getPerceptions() {
+	public Collection<Percepts> getPerceptions(int curX, int curY) {
+
+
 		HashSet<Percepts> percepts = new HashSet<Percepts>();
 		
 		for (int y = -1; y <= 1; y++) {
 			for (int x = -1; x <= 1; x++) {
-				int px = playerX + x;
-				int py = playerY + y;
+				int px = curX + x;
+				int py = curY + y;
 				
-				if (px < 0 || py < 0 || px > 4 || py > 4) {
+				if (px < 0 || py < 0 || px > map.length - 1|| py > map.length - 1) {
 					continue;
 				}
 				
@@ -245,6 +258,10 @@ public class WumpusWorld {
         if (obj == Objectives.Wumpus || obj == Objectives.Pit || obj == Objectives.Ladder)
             isGameOver = true;
 
+		if ( isGameOver ) {
+			debug("You lost! :(");
+		}
+
         return isGameOver;
 	}
 
@@ -253,7 +270,12 @@ public class WumpusWorld {
      * @return
      */
     public boolean haveWon(){
-        return map[playerX][playerY].getObjective() == Objectives.Gold;
+		if ( map[playerX][playerY].getObjective() == Objectives.Ladder && hasGold ) {
+			debug("You won! :)");
+			return true;
+		}
+
+        return false;
     }
 
     /**
@@ -262,9 +284,13 @@ public class WumpusWorld {
 	private void printWorldObjectives(){
 		for(int y = 0; y < map.length; y++){
 			for(int x = 0; x < map.length; x++){
-				System.out.print("[" + getTile(x,y).getObjective().toString().charAt(0) + "]");
+				if ( x == playerX && y == playerY ) {
+					System.out.print("[X]");
+				} else{
+					System.out.print("[" + getTile(x,y).getObjective().toString().charAt(0) + "]");
+				}
 			}
-			System.out.println(' ');
+			debug(" ");
 		}
 	}
 
@@ -286,12 +312,12 @@ public class WumpusWorld {
 			//Map didn't fail to generate, validate
 			printWorldObjectives();
 			currentMapValid = CurrentMapIsValid();
-			System.out.println("--------");
+			debug("--------");
 
 			failedCount++;
 		}
 
-		System.out.println("Failed: " + (failedCount - 1) + " times");
+		debug("Failed: " + (failedCount - 1) + " times");
 
 	}
 
@@ -312,7 +338,7 @@ public class WumpusWorld {
 		while ( !queue.isEmpty() ) {
 			Tile curTile = queue.get(0);
 
-			//System.out.println(queue.size());
+			//debug(queue.size());
 
 			visited.put(curTile, true);
 
@@ -463,5 +489,11 @@ public class WumpusWorld {
 		}
 
 		return true;
+	}
+
+	private void debug(String s){
+		if ( debug ) {
+			System.out.println(s);
+		}
 	}
 }

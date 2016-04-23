@@ -185,7 +185,7 @@ public class Game_Main {
 		GLPanel currentPanel = 	gridPanels.get(panelIndex);
 		
 		// check surroundings
-		Collection<Percepts> percepts = world.getPerceptions();
+		Collection<Percepts> percepts = world.getPerceptions(world.getPlayerX(), world.getPlayerY());
 		
 		// check current tile
 		Objectives objective = world.getTile(world.getPlayerX(), world.getPlayerY()).getObjective();
