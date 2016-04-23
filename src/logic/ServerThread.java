@@ -31,6 +31,7 @@ public class ServerThread extends Thread {
 
 		catch (Exception e) {
 			System.err.println("Error in Server thread");
+			e.printStackTrace();
 		}
 
 	}

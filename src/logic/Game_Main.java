@@ -1,13 +1,16 @@
 package logic;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Collection;
-
-import javax.swing.JButton;
 
 import org.lwjgl.opengl.GL11;
 
 import graphics.GLIcon;
 import graphics.GLPanel;
+import graphics.GLPanel.Orientation;
 import graphics.GLView;
 import graphics.GLView.ClickListener;
 import graphics.Mouse;
@@ -16,14 +19,9 @@ import graphics.Player;
 import graphics.Shader;
 import graphics.Texture;
 import graphics.Window;
-import graphics.GLPanel.Orientation;
-import logic.Objectives;
-import logic.Percepts;
-import logic.WumpusWorld;
 import logic.WumpusWorld.Difficulty;
 import math.Vector2f;
 import math.Vector3f;
-import math.Vector4f;
 
 /**
  * Main runnable class for Wumpus World
@@ -33,6 +31,13 @@ import math.Vector4f;
 public class Game_Main {
 	private final int UPDATES_PER_SEC = 60;
 	private final int UPDATE_TIME_NS = 1000000000 / UPDATES_PER_SEC;
+	
+	Socket client;
+	String hostName = "localHost";
+	int portNumber = 1234;
+	String toSend, recieved;
+	BufferedReader fromServer;
+	PrintWriter toServer;
 	
 	GLPanel panel;
 	
@@ -60,6 +65,16 @@ public class Game_Main {
 	 * Basic contructor that initializes resources
 	 */
 	public Game_Main() {
+		
+		try{
+			client = new Socket(hostName, portNumber);
+			fromServer = new BufferedReader(new InputStreamReader(client.getInputStream()));
+			toServer = new PrintWriter(client.getOutputStream());
+			System.out.println("Successfully set up client");
+		}catch(Exception e){
+			System.err.println("Error in setting up sockets in Game main constructor");
+		}
+		
 		Window.createWindow(windowWidth, windowHeight, "Wumpus World - Game");
 		Window.setClearColor(50, 50, 50);
 		System.out.println(Window.getOpenGLVersion());

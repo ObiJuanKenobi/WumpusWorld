@@ -8,23 +8,24 @@ public class Server {
 	static Socket connectedClients[] = new Socket[2];
 
 	public static void main(String[] args) {
-	int portNumber = 4444;
+	int portNumber = 1234;
 	boolean listening = true;
 	
 		try(ServerSocket serverSocket = new ServerSocket(portNumber)){
+			System.out.println("Server successfully created");
 			while(listening){
 				//need to have 2 clients to do this
 				//TODO: have a better way of handling this
 				Socket client1 = serverSocket.accept();
-				Socket client2 = serverSocket.accept();
-				
-				connectedClients[0] = client1;
-				connectedClients[1] = client2;
-				
-				new ServerThread(client1).start();
 				printf("Client 1 has connected");
-				new ServerThread(client2).start();
+				connectedClients[0] = client1;
+				new ServerThread(client1).start();
+				
+				
+				Socket client2 = serverSocket.accept();	
 				printf("Client 2 has connected");
+				connectedClients[1] = client2;
+				new ServerThread(client2).start();
 		
 			}
 		}catch(Exception e){
