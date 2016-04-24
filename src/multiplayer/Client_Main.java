@@ -150,7 +150,7 @@ public class Client_Main {
 			System.out.println("Waiting on opponent...");
 		}
 		
-		listener.sendMessage("FOO");
+		listener.sendMessage("IDLE");
 		
 		if (Mouse.getMouse(Mouse.LEFT_CLICK)) {
 			listener.setCurrentTurn(false);

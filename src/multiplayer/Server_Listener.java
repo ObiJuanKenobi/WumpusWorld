@@ -11,6 +11,7 @@ public class Server_Listener extends Thread {
 	private BufferedReader fromClient;
 	private String messageFromClient;
 	private boolean isCurrentTurn = false;
+	private boolean running;
 
 	public Server_Listener(Socket socket) {
 		try {
@@ -31,31 +32,30 @@ public class Server_Listener extends Thread {
 
 	@Override
 	public void run() {
-		try {
-			messageFromClient = fromClient.readLine();
-		} catch (IOException e1) {
-			System.out.println("Connection with client has been interrupted");
-			System.exit(-1);
-		}
-		
-		printf(messageFromClient);
-		
-		if(isCurrentTurn) {
-			System.out.println("Sending TURN");
-			toClient.println("TURN");
-			toClient.flush();
+		running = true;
+		while(running) {
+			try {
+				messageFromClient = fromClient.readLine();
+			} catch (IOException e1) {
+				System.out.println("Connection with client has been interrupted");
+				System.exit(-1);
+			}
 			
-			if(messageFromClient.equals("MOVED")) {
-				isCurrentTurn = false;
-				Server_Main.adjustTurn();
+			if(isCurrentTurn) {
+				toClient.println("TURN");
+				toClient.flush();
+				
+				if(messageFromClient.equals("MOVED")) {
+					Server_Main.adjustTurn();
+					isCurrentTurn = false;
+				}
+			}
+			
+			if(!isCurrentTurn) {
+				toClient.println("WAIT");
+				toClient.flush();
 			}
 		}
-		
-		if(!isCurrentTurn) {
-			toClient.println("WAIT");
-			toClient.flush();
-		}
-
 	}
 	
 	/**

@@ -11,6 +11,7 @@ public class Client_Listener extends Thread {
 	private PrintWriter toServer;
 	private String messageFromServer;
 	private boolean isCurrentTurn;
+	private boolean running;
 
 	public Client_Listener(Socket socket) {
 		isCurrentTurn = false;
@@ -32,7 +33,7 @@ public class Client_Listener extends Thread {
 	public void setCurrentTurn(boolean bool) {
 		// if turn has ended
 		if(!bool) {
-			//sendMessage("MOVED");
+			sendMessage("MOVED");
 		}
 		
 		isCurrentTurn = bool;
@@ -44,17 +45,21 @@ public class Client_Listener extends Thread {
 	}
 
 	public void run() {
-		try {
-			messageFromServer = fromServer.readLine();
-		} catch (IOException e1) {
-			System.out.println("Connection with server has been interrupted");
-			System.exit(-1);
-		}
-		
-		if(messageFromServer.equals("TURN")) {
-			isCurrentTurn = true;
-		} else if (messageFromServer.equals("WAIT")) {
-			isCurrentTurn = false;
+		running = true;
+		while(running) {
+			try {
+				messageFromServer = fromServer.readLine();
+			} catch (IOException e1) {
+				System.out.println("Connection with server has been interrupted");
+				System.exit(-1);
+			}
+			
+			if(messageFromServer.equals("TURN")) {
+				isCurrentTurn = true;
+			} else if (messageFromServer.equals("WAIT")) {
+				isCurrentTurn = false;
+			}
 		}
 	}
+	
 }
