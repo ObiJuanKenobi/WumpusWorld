@@ -19,6 +19,8 @@ public class WumpusWorld {
 	private boolean isGameOver;
 	private boolean hasGold;
 	
+	private int mapSize = 5;
+	
 	public enum Difficulty {easy, medium, hard}
 	
 	private Difficulty difficulty;
@@ -34,7 +36,7 @@ public class WumpusWorld {
 	public WumpusWorld(Difficulty difficulty) {
 		this.difficulty = difficulty;
 		
-		GenerateValidWorld(5);
+		GenerateValidWorld(mapSize);
 
 		playerX = 0;
 		playerY = 0;
@@ -52,6 +54,14 @@ public class WumpusWorld {
 	 */
 	public Tile getTile(int x, int y) {
 		return map[x][y];
+	}
+	
+	/**
+	 * returns number of tiles in a row/column
+	 * @return mapSize
+	 */
+	public int getMapSize(){
+		return mapSize;
 	}
 
 	/**
@@ -255,11 +265,14 @@ public class WumpusWorld {
 	public boolean isGameOver(){
 		Objectives obj = map[playerX][playerY].getObjective();
 
-        if (obj == Objectives.Wumpus || obj == Objectives.Pit || obj == Objectives.Ladder)
+        if (obj == Objectives.Wumpus || obj == Objectives.Pit){
             isGameOver = true;
+        	debug("You lost! :(");
+        }	
 
-		if ( isGameOver ) {
-			debug("You lost! :(");
+		if ( obj == Objectives.Ladder && this.hasGold) {
+			isGameOver = true;
+        	debug("You won! :)");
 		}
 
         return isGameOver;
@@ -281,7 +294,7 @@ public class WumpusWorld {
     /**
      * Used for testing purposes to print the objective at each tile in the map
      */
-	private void printWorldObjectives(){
+	public void printWorldObjectives(){
 		for(int y = 0; y < map.length; y++){
 			for(int x = 0; x < map.length; x++){
 				if ( x == playerX && y == playerY ) {
