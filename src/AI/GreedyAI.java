@@ -1,22 +1,18 @@
-package logic;
+package AI;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 
+import logic.Percepts;
+import logic.Tile;
+import logic.WumpusWorld;
+
 /**
  * Created by paulgerlich on 4/9/16.
  */
-public class GreedyAI {
-    private static final int DOWN = 0, RIGHT = 1, UP = 2, LEFT = 3;
-
-    private WumpusWorld wumpusWorld;
-
-    private int currentX = 0;
-    private int currentY = 0;
-
-    private boolean haveFoundGold = false;
+public class GreedyAI extends AI {
 
     private Tile ladder;
     private ArrayList<Integer> pathToLadder;
@@ -27,31 +23,43 @@ public class GreedyAI {
     private boolean debug = true;
 
     public GreedyAI(WumpusWorld world){
-        wumpusWorld = world;
+        super(world);
     }
 
-    public void play(){
+    public boolean play(){
 
         while ( !wumpusWorld.haveWon() && !wumpusWorld.isGameOver() ) {
-            // Analyze current tile probabilities
-            consumeCurrentTile();
-
-            int move = getNextMove();
-
-            // Successfully make a move (didn't change orientation)
-            if ( wumpusWorld.move(move) ) {
-                //Update position
-                currentX = wumpusWorld.getPlayerX();
-                currentY = wumpusWorld.getPlayerY();
-
-                debug("New Location: [" + String.valueOf(currentX) + "," + String.valueOf(currentY) + "]-------", true);
-
-                lastMoveAttempt = -1;
-            } else {
-                //debug("Changed orientation.");
-                lastMoveAttempt = move;
-            }
+        	makeMove();
         }
+        
+        return wumpusWorld.haveWon();
+    }
+    
+    public boolean makeMove(){
+    	if(wumpusWorld.isGameOver() || wumpusWorld.haveWon()){
+    		return false;
+    	}
+    	
+    	// Analyze current tile probabilities
+        consumeCurrentTile();
+
+        int move = getNextMove();
+
+        // Successfully make a move (didn't change orientation)
+        if ( wumpusWorld.move(move) ) {
+            //Update position
+            currentX = wumpusWorld.getPlayerX();
+            currentY = wumpusWorld.getPlayerY();
+
+            debug("New Location: [" + String.valueOf(currentX) + "," + String.valueOf(currentY) + "]-------", true);
+
+            lastMoveAttempt = -1;
+        } else {
+            //debug("Changed orientation.");
+            lastMoveAttempt = move;
+        }
+        
+        return wumpusWorld.haveWon();
     }
 
     /**
@@ -272,11 +280,17 @@ public class GreedyAI {
         }
 
         ArrayList<Tile> pathFromLadderToCurrentPosition = new ArrayList<>();
+        
+        boolean curTileIsLadderSupposedly = true;
 
         // Generate path from ancestors
         while ( curTile != wumpusWorld.getTile(currentX, currentY) ) {
             pathFromLadderToCurrentPosition.add(curTile);
             curTile = ancestors.get(curTile);
+            curTileIsLadderSupposedly = false;
+        }
+        if(curTileIsLadderSupposedly){
+        	System.out.println(" curTileIsLadderSupposedly ");
         }
 
         // Reverse path
@@ -301,6 +315,10 @@ public class GreedyAI {
 
             curX = nextTile.getX();
             curY = nextTile.getY();
+        }
+        
+        if(directionalPathToLadder.size() == 0){
+        	System.out.println("Path to ladder is empty...");
         }
 
         return directionalPathToLadder;
