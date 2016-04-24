@@ -1,8 +1,6 @@
 package multiplayer;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -35,15 +33,11 @@ import math.Vector3f;
 public class Client_Main {
 	private final int UPDATES_PER_SEC = 60;
 	private final int UPDATE_TIME_NS = 1000000000 / UPDATES_PER_SEC;
+	private final String HOST_NAME = "localhost";
+	private final int PORT_NUMBER = 1234;
 	
 	// Server details
-	boolean connectionFlag, turn;
-	Socket client;
-	String hostName = "localHost";
-	int portNumber = 1234;
-	String toSend, recieved;
-	BufferedReader fromServer;
-	PrintWriter toServer;
+	private Client_Listener listener;
 	
 	GLPanel panel;
 	
@@ -71,17 +65,6 @@ public class Client_Main {
 	 * Basic contructor that initializes resources
 	 */
 	public Client_Main() {
-		
-		try{
-			client = new Socket(hostName, portNumber);
-			fromServer = new BufferedReader(new InputStreamReader(client.getInputStream()));
-			toServer = new PrintWriter(client.getOutputStream());
-			System.out.println("Successfully set up client");
-		}catch(Exception e){
-			System.err.println("Error in setting up sockets in Game main constructor");
-			System.out.println("Going offline");
-		}
-		
 		Window.createWindow(windowWidth, windowHeight, "Wumpus World - Game");
 		Window.setClearColor(50, 50, 50);
 		System.out.println(Window.getOpenGLVersion());
@@ -161,7 +144,14 @@ public class Client_Main {
 			running = false;
 		}
 		
+		if (listener.isCurrentTurn()) {
+			System.out.println("It is your turn!");
+		} else {
+			System.out.println("Waiting on opponent...");
+		}
+		
 		if (Mouse.getMouse(Mouse.LEFT_CLICK)) {
+			listener.setCurrentTurn();
 			
 			// calculate tile of click
 			Vector2f mouse = MousePos.getMousePosition();
@@ -190,7 +180,6 @@ public class Client_Main {
 			System.out.println("Location: " + world.getPlayerX() + ", " + world.getPlayerY());
 			System.out.println("Direction: " + world.getplayerOrientation());			
 			System.out.println();
-			
 			
 			// wait shortly to prevent click spamming
 			try {
@@ -281,8 +270,8 @@ public class Client_Main {
 	 * Intuitive method to set running flag and enter run loop
 	 */
 	public void start() {
+		initNetworking();
 		initStartScreen();
-		//running = true;
 		run();
 	}
 	
@@ -364,7 +353,7 @@ public class Client_Main {
 		final Texture mediumUnselected = new Texture("res/sprites/medium.PNG");
 		final Texture hardUnselected = new Texture("res/sprites/hard.PNG");
 		final Texture easySelected = new Texture("res/sprites/easySelected.PNG");
-		final Texture mediumSelected = new Texture("res/sprites/mediumSelected.PNG");
+		final Texture mediumSelected = new Texture("res/sprites/mediumSelected.png");
 		final Texture hardSelected = new Texture("res/sprites/hardSelected.PNG");
 		
 		easyBtn.SetTexture(easySelected);
@@ -423,6 +412,21 @@ public class Client_Main {
 		Window.render();
 	}
 	
+	/**
+	 * Attempt to secure connection to server
+	 */
+	private void initNetworking() {
+		listener = null;
+		
+		try {
+			listener = new Client_Listener(new Socket(HOST_NAME, PORT_NUMBER));
+			listener.start();
+		} catch (IOException e) {
+			System.out.println("Unable to initialize networking");
+		}
+	}
+	
+	/**
 	private void checkConnection(){
 		try{
 			toSend = "STATUS:connection";
@@ -443,5 +447,5 @@ public class Client_Main {
 			System.out.println("Could not contact server");
 			e.printStackTrace();
 		}
-	}
+	}**/
 }

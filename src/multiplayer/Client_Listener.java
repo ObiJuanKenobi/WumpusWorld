@@ -6,44 +6,51 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-public class clientListener extends Thread {
-	Socket client;
-	BufferedReader fromServer;
-	PrintWriter toServer;
-	Game_Main game;
+public class Client_Listener extends Thread {
+	private BufferedReader fromServer;
+	private PrintWriter toServer;
+	private String messageFromServer;
+	private boolean isCurrentTurn;
 
-	public clientListener(Socket s) {
-		client = s;
+	public Client_Listener(Socket socket) {
+		isCurrentTurn = false;
+		
 		try {
-			game = new Game_Main();
-			fromServer = new BufferedReader(new InputStreamReader(client.getInputStream()));
-			toServer = new PrintWriter(s.getOutputStream());
-		} catch (Exception e) {
-			System.err.println("Error in creating PrintServer or BufferedReader");
+			fromServer = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			toServer = new PrintWriter(socket.getOutputStream());
+		} catch (IOException e) {
+			System.err.println("Error creating connections with server");
 			System.exit(-1);
 		}
 
 	}
-
-	public void run() {
-		String toSend, recieved;
-		try {
-			//wait for a message from the server
-			while((recieved = fromServer.readLine()) != null){
-				//do the analyzation here
-				
-				//if it is game over for the other player
-				
-				//if it the other player has moved
-				
-				
-			}
-
-		} catch (Exception e) {
-
-		}
+	
+	public boolean isCurrentTurn() {
+		return isCurrentTurn;
+	}
+	
+	public void setCurrentTurn() {
+		sendMessage("MOVED");
+		isCurrentTurn = false;
+	}
+	
+	public void sendMessage(String msg) {
+		toServer.println(msg);
+		toServer.flush();
 	}
 
-	
-
+	public void run() {
+		try {
+			messageFromServer = fromServer.readLine();
+		} catch (IOException e1) {
+			System.out.println("Connection with server has been interrupted");
+			System.exit(-1);
+		}
+		
+		if(messageFromServer.equals("TURN")) {
+			isCurrentTurn = true;
+		} else if (messageFromServer.equals("END")) {
+			
+		}
+	}
 }

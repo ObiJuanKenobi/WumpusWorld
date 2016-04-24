@@ -13,7 +13,7 @@ public class Client {
 		
 		try{
 			Socket clientSocket = new Socket(hostName, portNumber);
-			new clientListener(clientSocket).start();
+			new Client_Listener(clientSocket).start();
 			System.out.println("Client Successfully created");
 					
 		}catch(Exception e){

@@ -4,19 +4,27 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+/**
+ * Primary server that listens for client connections
+ * @author Team Bits Please
+ *
+ */
 public class Server_Main {
 	//private final static String HOST_NAME = "localhost";
 	private final static int PORT_NUMBER = 1234;
 	
 	private static ServerSocket serverSocket;
-	private static Socket client_1;
-	private static Socket client_2;
+	private static Server_Listener client_1;
+	private static Server_Listener client_2;
 
 	public static void main(String[] args) {
+		Socket sock1 = null;
+		Socket sock2 = null;
 		serverSocket = null;
 		client_1 = null;
 		client_2 = null;
 		
+		// Try to create server socket
 		try {
 			serverSocket = new ServerSocket(PORT_NUMBER);
 		} catch (IOException e1) {
@@ -28,25 +36,46 @@ public class Server_Main {
 		while(client_2 == null || client_2 == null){
 			printf("Waiting for connections...");
 			
+			// Try to accept first client
 			try {
-				client_1 = serverSocket.accept();
+				sock1 = serverSocket.accept();
 			} catch (IOException e) {
 				printf("Unable to receive connection from client_1");
 			}
 			
 			printf("Client 1 has connected");
-			new Server_Listener(client_1).start();
+			client_1 = new Server_Listener(sock1);
+			client_1.start();
 			
+			// Try to accept second client
 			try {
-				client_2 = serverSocket.accept();
+				sock2 = serverSocket.accept();
 			} catch (IOException e) {
 				printf("Unable to receive connection from client_1");
 			}
 			
 			printf("Client 2 has connected");
-			new Server_Listener(client_2).start();
+			client_2 = new Server_Listener(sock2);
+			client_2.start();
 		}
-
+		
+		printf("Both connections have been received!");
+		
+		while(ready()) {
+			//System.out.println(isCurrentTurn(client_1));
+		}
+	}
+	
+	/**
+	 * Switches the active player
+	 * @param listen Listening connection that just made a move
+	 */
+	public static void adjustTurn(Server_Listener listen) {
+		if(listen.equals(client_1)) {
+			client_2.setCurrentTurn();
+		} else if (listen.equals(client_2)) {
+			client_1.setCurrentTurn();
+		}
 	}
 	
 	/**
@@ -54,7 +83,7 @@ public class Server_Main {
 	 * @return True if both are connected, false otherwise
 	 */
 	public static boolean ready() {
-		return (client_1 == null || client_2 == null);
+		return !(client_1 == null || client_2 == null);
 	}
 	
 	/**
