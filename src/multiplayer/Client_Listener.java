@@ -6,6 +6,11 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
+/**
+ * Handles message exchanges between client and server
+ * @author Team Bits Please
+ *
+ */
 public class Client_Listener extends Thread {
 	private BufferedReader fromServer;
 	private PrintWriter toServer;
@@ -13,6 +18,10 @@ public class Client_Listener extends Thread {
 	private boolean isCurrentTurn;
 	private boolean running;
 
+	/**
+	 * Creates a thread to listen for messages on given socket
+	 * @param socket Socket to listen on
+	 */
 	public Client_Listener(Socket socket) {
 		isCurrentTurn = false;
 		
@@ -26,10 +35,18 @@ public class Client_Listener extends Thread {
 
 	}
 	
+	/**
+	 * Checks if it is this connection's turn
+	 * @return True if this connection's turn, false otherwise
+	 */
 	public boolean isCurrentTurn() {
 		return isCurrentTurn;
 	}
 	
+	/**
+	 * Change the status of this connection's current turn
+	 * @param bool New status of turn
+	 */
 	public void setCurrentTurn(boolean bool) {
 		// if turn has ended
 		if(!bool) {
@@ -39,14 +56,27 @@ public class Client_Listener extends Thread {
 		isCurrentTurn = bool;
 	}
 	
+	/**
+	 * Send message to server
+	 * @param msg Message to be sent
+	 */
 	public void sendMessage(String msg) {
 		toServer.println(msg);
 		toServer.flush();
 	}
+	
+	/**
+	 * End this thread
+	 */
+	public void kill() {
+		running = false;
+	}
 
+	@Override
 	public void run() {
 		running = true;
-		while(running) {
+		
+		while (running) {
 			try {
 				messageFromServer = fromServer.readLine();
 			} catch (IOException e1) {
@@ -54,10 +84,16 @@ public class Client_Listener extends Thread {
 				System.exit(-1);
 			}
 			
-			if(messageFromServer.equals("TURN")) {
+			if (messageFromServer.equals("TURN")) {
 				isCurrentTurn = true;
 			} else if (messageFromServer.equals("WAIT")) {
 				isCurrentTurn = false;
+			} else if (messageFromServer.equals("WON")) {
+				System.out.println("You have beaten the other player!");
+				kill();
+			} else if (messageFromServer.equals("LOST")) {
+				System.out.println("You have lost to the other player!");
+				kill();
 			}
 		}
 	}

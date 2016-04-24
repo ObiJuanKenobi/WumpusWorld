@@ -17,6 +17,10 @@ public class Server_Main {
 	private static Server_Listener client_1;
 	private static Server_Listener client_2;
 
+	/**
+	 * Main thread for game server
+	 * @param args Standard arguments
+	 */
 	public static void main(String[] args) {
 		Socket sock1 = null;
 		Socket sock2 = null;
@@ -63,6 +67,7 @@ public class Server_Main {
 		client_1.setCurrentTurn(true);
 		
 		while(ready()) {}
+		printf("Terminated");
 	}
 	
 	/**
@@ -75,6 +80,25 @@ public class Server_Main {
 		} else if (client_2.isCurrentTurn()) {
 			client_1.setCurrentTurn(true);
 		}
+	}
+	
+	/**
+	 * Notifies winner and loser
+	 * Kills server and listeners
+	 */
+	public static void handleEndOfGame() {
+		printf("End of game!");
+		if (client_1.hasWon() || client_2.hasLost()) {
+			client_1.sendMessage("WON");
+			client_2.sendMessage("LOST");
+		} else if (client_1.hasLost() || client_2.hasWon()) {
+			client_1.sendMessage("LOST");
+			client_2.sendMessage("WON");
+		}
+		
+		client_1.kill();
+		client_2.kill();
+		
 	}
 	
 	/**
