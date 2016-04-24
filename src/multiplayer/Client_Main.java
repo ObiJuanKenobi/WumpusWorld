@@ -107,7 +107,7 @@ public class Client_Main {
 		Mouse.buttons[0] = false;
 
 		//Begin game:
-		while(running && !world.isGameOver()) {
+		while(running) {
 			elapsedTime = System.nanoTime() - startTime;
 			
 			if (elapsedTime >= UPDATE_TIME_NS) {
@@ -144,14 +144,19 @@ public class Client_Main {
 			running = false;
 		}
 		
-		if (listener.isCurrentTurn()) {
-			System.out.println("It is your turn!");
-		} else {
-			System.out.println("Waiting on opponent...");
+		if (listener.running()) {
+			if (listener.isCurrentTurn()) {
+				System.out.println("It is your turn!");
+			} else {
+				System.out.println("Waiting on opponent...");
+			}
 		}
 		
-		if (Mouse.getMouse(Mouse.LEFT_CLICK)) {
-			listener.setCurrentTurn();
+		listener.sendMessage("IDLE");
+		
+		if (Mouse.getMouse(Mouse.LEFT_CLICK) && listener.isCurrentTurn()) {
+			listener.setCurrentTurn(false);
+			listener.sendMessage("MOVED");
 			
 			// calculate tile of click
 			Vector2f mouse = MousePos.getMousePosition();
@@ -187,7 +192,7 @@ public class Client_Main {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-		}
+		} // end movement block
 		
 		player.update(world.getplayerOrientation());
 		world.hasGold();
@@ -212,15 +217,18 @@ public class Client_Main {
 				
 				if (objective == Objectives.Gold) {
 					System.out.println("You have found the gold!");
-					//running = false;
+					listener.sendTen("WON");
+					running = false;
 				}
 				if (objective == Objectives.Pit) {
 					System.out.println("You fell into a pit and died!");
-					//running = false;
+					listener.sendTen("LOSE");
+					running = false;
 				}
 				if (objective == Objectives.Wumpus) {
 					System.out.println("You have been eaten by the Wumpus!");
-					//running = false;
+					listener.sendTen("LOSE");
+					running = false;
 				}
 				
 				currentPanel.AddView(new GLIcon(.8f * gridPanels.get(panelIndex).GetWidth(), .8f * gridPanels.get(panelIndex).GetHeight(), objective));
@@ -426,26 +434,4 @@ public class Client_Main {
 		}
 	}
 	
-	/**
-	private void checkConnection(){
-		try{
-			toSend = "STATUS:connection";
-			toServer.print(toSend);
-			toServer.flush();
-			
-			while((recieved = fromServer.readLine())!= null){
-				if(recieved == "true"){
-					connectionFlag = true;
-					return;
-				}else{
-					connectionFlag = false;
-					System.out.println("Waiting for another user to connect");
-					return;
-				}
-			}
-		}catch(Exception e){
-			System.out.println("Could not contact server");
-			e.printStackTrace();
-		}
-	}**/
 }

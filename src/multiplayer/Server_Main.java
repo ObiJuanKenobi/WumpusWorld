@@ -17,6 +17,10 @@ public class Server_Main {
 	private static Server_Listener client_1;
 	private static Server_Listener client_2;
 
+	/**
+	 * Main thread for game server
+	 * @param args Standard arguments
+	 */
 	public static void main(String[] args) {
 		Socket sock1 = null;
 		Socket sock2 = null;
@@ -60,22 +64,43 @@ public class Server_Main {
 		}
 		
 		printf("Both connections have been received!");
+		client_1.setCurrentTurn(true);
 		
-		while(ready()) {
-			//System.out.println(isCurrentTurn(client_1));
-		}
+		while(ready()) {}
+		printf("Terminated");
 	}
 	
 	/**
 	 * Switches the active player
 	 * @param listen Listening connection that just made a move
 	 */
-	public static void adjustTurn(Server_Listener listen) {
-		if(listen.equals(client_1)) {
-			client_2.setCurrentTurn();
-		} else if (listen.equals(client_2)) {
-			client_1.setCurrentTurn();
+	public static void adjustTurn() {
+		if(client_1.isCurrentTurn()) {
+			client_2.setCurrentTurn(true);
+		} else if (client_2.isCurrentTurn()) {
+			client_1.setCurrentTurn(true);
 		}
+	}
+	
+	/**
+	 * Notifies winner and loser
+	 * Kills server and listeners
+	 */
+	public static void handleEndOfGame() {
+		printf("End of game!");
+		if (client_1.hasWon() || client_2.hasLost()) {
+			client_1.sendMessage("WON");
+			client_2.sendMessage("LOST");
+		} else if (client_1.hasLost() || client_2.hasWon()) {
+			client_1.sendMessage("LOST");
+			client_2.sendMessage("WON");
+		}
+		
+		client_1.kill();
+		client_2.kill();
+		client_1 = null;
+		client_2 = null;
+		
 	}
 	
 	/**
