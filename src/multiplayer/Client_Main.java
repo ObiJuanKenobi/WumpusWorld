@@ -130,6 +130,9 @@ public class Client_Main {
 		Window.dispose();
 	}
 	
+	/**
+	 * Check if window has been told to close
+	 */
 	private void checkClose(){
 		if(Window.isCloseRequested()){
 			running = false;
@@ -325,6 +328,9 @@ public class Client_Main {
 		panelHeight = windowHeight / dimension;
 	}
 	
+	/**
+	 * Initialize start menu screen
+	 */
 	private void initStartScreen(){
 		Window.clear();
 		 
