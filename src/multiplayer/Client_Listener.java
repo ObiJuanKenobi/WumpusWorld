@@ -29,9 +29,13 @@ public class Client_Listener extends Thread {
 		return isCurrentTurn;
 	}
 	
-	public void setCurrentTurn() {
-		sendMessage("MOVED");
-		isCurrentTurn = false;
+	public void setCurrentTurn(boolean bool) {
+		// if turn has ended
+		if(!bool) {
+			//sendMessage("MOVED");
+		}
+		
+		isCurrentTurn = bool;
 	}
 	
 	public void sendMessage(String msg) {
@@ -49,8 +53,8 @@ public class Client_Listener extends Thread {
 		
 		if(messageFromServer.equals("TURN")) {
 			isCurrentTurn = true;
-		} else if (messageFromServer.equals("END")) {
-			
+		} else if (messageFromServer.equals("WAIT")) {
+			isCurrentTurn = false;
 		}
 	}
 }

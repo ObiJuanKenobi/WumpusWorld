@@ -10,7 +10,7 @@ public class Server_Listener extends Thread {
 	private PrintWriter toClient;
 	private BufferedReader fromClient;
 	private String messageFromClient;
-	private boolean isCurrentTurn;
+	private boolean isCurrentTurn = false;
 
 	public Server_Listener(Socket socket) {
 		try {
@@ -25,8 +25,8 @@ public class Server_Listener extends Thread {
 		return isCurrentTurn;
 	}
 	
-	public void setCurrentTurn() {
-		isCurrentTurn = true;
+	public void setCurrentTurn(boolean bool) {
+		isCurrentTurn = bool;
 	}
 
 	@Override
@@ -38,19 +38,22 @@ public class Server_Listener extends Thread {
 			System.exit(-1);
 		}
 		
+		printf(messageFromClient);
+		
 		if(isCurrentTurn) {
+			System.out.println("Sending TURN");
 			toClient.println("TURN");
 			toClient.flush();
+			
+			if(messageFromClient.equals("MOVED")) {
+				isCurrentTurn = false;
+				Server_Main.adjustTurn();
+			}
 		}
 		
 		if(!isCurrentTurn) {
 			toClient.println("WAIT");
 			toClient.flush();
-			
-			if(messageFromClient.equals("MOVED")) {
-				isCurrentTurn = false;
-				Server_Main.adjustTurn(this);
-			}
 		}
 
 	}

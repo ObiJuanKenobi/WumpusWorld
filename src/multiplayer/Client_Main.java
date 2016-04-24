@@ -150,8 +150,10 @@ public class Client_Main {
 			System.out.println("Waiting on opponent...");
 		}
 		
+		listener.sendMessage("FOO");
+		
 		if (Mouse.getMouse(Mouse.LEFT_CLICK)) {
-			listener.setCurrentTurn();
+			listener.setCurrentTurn(false);
 			
 			// calculate tile of click
 			Vector2f mouse = MousePos.getMousePosition();
