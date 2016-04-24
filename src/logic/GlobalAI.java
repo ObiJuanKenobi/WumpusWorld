@@ -11,7 +11,7 @@ import java.util.HashSet;
  * @author Jacob
  *
  */
-public class GlobalAI {
+public class GlobalAI extends AI {
 
 	//Graph representation of our knowledge of the map
 	private HashMap<GraphNode, HashSet<GraphNode>> graph =  new HashMap<GraphNode, HashSet<GraphNode>>();
@@ -21,16 +21,6 @@ public class GlobalAI {
 	
 	//Represents the tile of the graph the AI is currently on.
 	private GraphNode currentNode;
-	
-	//Movement directions
-	private static final int DOWN = 0, RIGHT = 1, UP = 2, LEFT = 3;
-
-    private WumpusWorld wumpusWorld;
-
-    private int currentX = 0;
-    private int currentY = 0;
-
-    private boolean haveFoundGold = false;
 
     //Stores a reference to the ladder once found if haven't found gold yet
     private GraphNode ladder;
@@ -49,46 +39,50 @@ public class GlobalAI {
 
 
     public GlobalAI(WumpusWorld world) {
-        wumpusWorld = world;
+        super(world);
     }
 
-    public void play(){
+    public boolean play(){
 
     	currentNode = new GraphNode(currentX, currentY);
     	addNodeToGraph(currentNode);
 
         while (!wumpusWorld.haveWon() && !wumpusWorld.isGameOver()) {
         	
-        	// Analyze current tile probabilities
-            consumeCurrentTile();
-
-            int move = getNextMove();
-
-            // Successfully make a move (didn't change orientation)
-            if (wumpusWorld.move(move)) {
-                //Update position
-                currentX = wumpusWorld.getPlayerX();
-                currentY = wumpusWorld.getPlayerY();
-                
-                System.out.println("New Location: [" + String.valueOf(currentX) + "," + String.valueOf(currentY) + "]-------");
-                
-                boolean gameOver = wumpusWorld.isGameOver();
-                if(gameOver){
-                	if(wumpusWorld.haveWon()){
-                		System.out.println("AI won");
-                	}
-                	else {
-                		System.out.println("AI lost");
-                	}
-                	return;
-                }
-                
-                //Update currentNode:
-                currentNode = tileStringsToNodes.get(getTileString(currentX, currentY));
-                path.remove(0); 
-
-            } 
+        	makeMove();
         }
+        
+        return wumpusWorld.haveWon();
+    }
+    
+    // returns true if won on this move
+    public boolean makeMove(){
+    	if(wumpusWorld.isGameOver() || wumpusWorld.haveWon()){
+    		return false;
+    	}
+    	
+    	// Analyze current tile probabilities
+        consumeCurrentTile();
+
+        int move = getNextMove();
+
+        // Successfully make a move (didn't change orientation)
+        if (wumpusWorld.move(move)) {
+            //Update position
+            currentX = wumpusWorld.getPlayerX();
+            currentY = wumpusWorld.getPlayerY();
+            
+            if(debug)
+            	System.out.println("New Location: [" + String.valueOf(currentX) + "," + String.valueOf(currentY) + "]-------");
+            
+            //Update currentNode:
+            currentNode = tileStringsToNodes.get(getTileString(currentX, currentY));
+            path.remove(0); 
+
+        } 
+        
+        return wumpusWorld.haveWon();
+    	
     }
     
     private void printGraph(){
