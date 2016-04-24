@@ -1,10 +1,14 @@
-package logic;
+package AI;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+
+import logic.Objectives;
+import logic.Percepts;
+import logic.WumpusWorld;
 
 /**
  * AI agent that uses a BFS search approach, looking at the entire known map to make the safest moves.
@@ -35,7 +39,7 @@ public class GlobalAI extends AI {
     
     //Priority Queue of unvisited tiles
     // first to be removed is the most safe square to move to 
-    private PriorityQueue unvisitedNodesQueue = new PriorityQueue();
+    protected PriorityQueue unvisitedNodesQueue = new PriorityQueue();
 
 
     public GlobalAI(WumpusWorld world) {
@@ -499,44 +503,10 @@ public class GlobalAI extends AI {
 			}
 			
 			
-			if(this.risk < other.risk || (this.risk == this.risk && this.glitter && !other.glitter && !GlobalAI.this.haveFoundGold))
+			if(this.risk < other.risk || (this.risk == this.risk && this.glitter && !other.glitter && !haveFoundGold))
 				return -1;
 			else
 				return 1;
-		}
-	}
-	
-	//Used for keeping unvisited nodes sorted by lowest danger probability
-	class PriorityQueue {
-		
-		ArrayList<GraphNode> queue = new ArrayList<GraphNode>();
-		
-		public void add(GraphNode node){
-			int index = queue.size();
-			while(index > 0 && node.compareTo(queue.get(index - 1)) < 0) {
-				index--;
-			}
-			queue.add(index, node);
-		}
-		
-		public void update(){
-			GraphNode[] nodes = new GraphNode[queue.size()];
-			Arrays.sort(queue.toArray(nodes));
-			queue.clear();
-			for(int i=0; i<nodes.length; i++){
-				queue.add(nodes[i]);
-			}
-		}
-		
-		public GraphNode remove(){
-			if(queue.size() == 0){
-				throw new IllegalStateException("No elements in queue to be removed");
-			}
-			return queue.remove(0);
-		}
-		
-		public boolean isEmpty(){
-			return queue.isEmpty();
 		}
 	}
 	

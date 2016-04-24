@@ -1,4 +1,4 @@
-import logic.GreedyAI;
+import AI.GreedyAI;
 import logic.WumpusWorld;
 
 public class Test_Main {

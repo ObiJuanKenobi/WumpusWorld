@@ -1,9 +1,13 @@
-package logic;
+package AI;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+
+import logic.Percepts;
+import logic.Tile;
+import logic.WumpusWorld;
 
 /**
  * Created by paulgerlich on 4/9/16.
@@ -276,11 +280,17 @@ public class GreedyAI extends AI {
         }
 
         ArrayList<Tile> pathFromLadderToCurrentPosition = new ArrayList<>();
+        
+        boolean curTileIsLadderSupposedly = true;
 
         // Generate path from ancestors
         while ( curTile != wumpusWorld.getTile(currentX, currentY) ) {
             pathFromLadderToCurrentPosition.add(curTile);
             curTile = ancestors.get(curTile);
+            curTileIsLadderSupposedly = false;
+        }
+        if(curTileIsLadderSupposedly){
+        	System.out.println(" curTileIsLadderSupposedly ");
         }
 
         // Reverse path
@@ -305,6 +315,10 @@ public class GreedyAI extends AI {
 
             curX = nextTile.getX();
             curY = nextTile.getY();
+        }
+        
+        if(directionalPathToLadder.size() == 0){
+        	System.out.println("Path to ladder is empty...");
         }
 
         return directionalPathToLadder;

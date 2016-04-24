@@ -267,12 +267,12 @@ public class WumpusWorld {
 
         if (obj == Objectives.Wumpus || obj == Objectives.Pit){
             isGameOver = true;
-        	debug("You lost! :(");
+        	//debug("You lost! :(");
         }	
 
 		if ( obj == Objectives.Ladder && this.hasGold) {
 			isGameOver = true;
-        	debug("You won! :)");
+        	//debug("You won! :)");
 		}
 
         return isGameOver;
@@ -284,7 +284,7 @@ public class WumpusWorld {
      */
     public boolean haveWon(){
 		if ( map[playerX][playerY].getObjective() == Objectives.Ladder && hasGold ) {
-			debug("You won! :)");
+			//debug("You won! :)");
 			return true;
 		}
 
@@ -420,13 +420,13 @@ public class WumpusWorld {
      */
 	private boolean GenerateRandomWorld(int width){
 		
-		double pitProbability = 0.75;
+		double pitProbability = 0.55;
 
-		if(difficulty == Difficulty.easy){
-			pitProbability = 0.30;
+		if(difficulty == Difficulty.easy) {
+			pitProbability = 0.15;
 		}
 		else if(difficulty == Difficulty.medium){
-			pitProbability = .55;
+			pitProbability = .35;
 		}
 
 

@@ -1,4 +1,6 @@
-package logic;
+package AI;
+
+import logic.WumpusWorld;
 
 public abstract class AI {
 	
