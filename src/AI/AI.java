@@ -4,6 +4,8 @@ import logic.WumpusWorld;
 
 public abstract class AI {
 	
+	public enum AiDifficulty {none, easy, medium, hard};
+	
 	protected static final int DOWN = 0, RIGHT = 1, UP = 2, LEFT = 3;
 	
 	protected WumpusWorld wumpusWorld;
