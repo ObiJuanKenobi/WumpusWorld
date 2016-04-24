@@ -332,15 +332,15 @@ public class Game_Main {
 		panel.AddView(difficultyPanel);
 		difficultyPanel.Translate(new Vector3f(-.4f, -.2f, 0.0f));
 		
-		GLView easyBtn = new GLView(.2f, .2f);
-		GLView mediumBtn = new GLView(.25f, .2f);
-		GLView hardBtn = new GLView(.2f, .2f);
+		final GLView easyBtn = new GLView(.2f, .2f);
+		final GLView mediumBtn = new GLView(.25f, .2f);
+		final GLView hardBtn = new GLView(.2f, .2f);
 		
 		final Texture easyUnselected = new Texture("res/sprites/easy.PNG");
 		final Texture mediumUnselected = new Texture("res/sprites/medium.PNG");
 		final Texture hardUnselected = new Texture("res/sprites/hard.PNG");
 		final Texture easySelected = new Texture("res/sprites/easySelected.PNG");
-		final Texture mediumSelected = new Texture("res/sprites/mediumSelected.PNG");
+		final Texture mediumSelected = new Texture("res/sprites/mediumSelected.png");
 		final Texture hardSelected = new Texture("res/sprites/hardSelected.PNG");
 		
 		easyBtn.SetTexture(easySelected);

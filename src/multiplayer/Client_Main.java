@@ -1,9 +1,9 @@
-package logic;
+package multiplayer;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -20,6 +20,9 @@ import graphics.Player;
 import graphics.Shader;
 import graphics.Texture;
 import graphics.Window;
+import logic.Objectives;
+import logic.Percepts;
+import logic.WumpusWorld;
 import logic.WumpusWorld.Difficulty;
 import math.Vector2f;
 import math.Vector3f;
@@ -29,10 +32,11 @@ import math.Vector3f;
  * @author Team Bits Please
  *
  */
-public class Game_Main {
+public class Client_Main {
 	private final int UPDATES_PER_SEC = 60;
 	private final int UPDATE_TIME_NS = 1000000000 / UPDATES_PER_SEC;
 	
+	// Server details
 	boolean connectionFlag, turn;
 	Socket client;
 	String hostName = "localHost";
@@ -60,13 +64,13 @@ public class Game_Main {
 	 * @param args Standard command-line args
 	 */
 	public static void main(String[] args) {
-		new Game_Main().start();
+		new Client_Main().start();
 	}
 	
 	/**
 	 * Basic contructor that initializes resources
 	 */
-	public Game_Main() {
+	public Client_Main() {
 		
 		try{
 			client = new Socket(hostName, portNumber);
@@ -352,9 +356,9 @@ public class Game_Main {
 		panel.AddView(difficultyPanel);
 		difficultyPanel.Translate(new Vector3f(-.4f, -.2f, 0.0f));
 		
-		GLView easyBtn = new GLView(.2f, .2f);
-		GLView mediumBtn = new GLView(.25f, .2f);
-		GLView hardBtn = new GLView(.2f, .2f);
+		final GLView easyBtn = new GLView(.2f, .2f);
+		final GLView mediumBtn = new GLView(.25f, .2f);
+		final GLView hardBtn = new GLView(.2f, .2f);
 		
 		final Texture easyUnselected = new Texture("res/sprites/easy.PNG");
 		final Texture mediumUnselected = new Texture("res/sprites/medium.PNG");

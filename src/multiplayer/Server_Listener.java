@@ -1,16 +1,16 @@
-package logic;
+package multiplayer;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-public class ServerThread extends Thread {
+public class Server_Listener extends Thread {
 	Socket socket = null;
 	PrintWriter toClient;
 	BufferedReader fromClient;
 
-	public ServerThread(Socket s) {
+	public Server_Listener(Socket s) {
 		socket = s;
 		try {
 			toClient = new PrintWriter(socket.getOutputStream());
