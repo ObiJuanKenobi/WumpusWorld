@@ -5,6 +5,7 @@ import javax.swing.JButton;
 
 import org.lwjgl.opengl.GL11;
 
+import AI.AI.AiDifficulty;
 import graphics.GLIcon;
 import graphics.GLPanel;
 import graphics.GLView;
@@ -13,6 +14,7 @@ import graphics.Mouse;
 import graphics.MousePos;
 import graphics.Player;
 import graphics.Shader;
+import graphics.StartMenu;
 import graphics.Texture;
 import graphics.Window;
 import graphics.GLPanel.Orientation;
@@ -33,16 +35,14 @@ public class Game_Main {
 	private final int UPDATES_PER_SEC = 60;
 	private final int UPDATE_TIME_NS = 1000000000 / UPDATES_PER_SEC;
 	
-	GLPanel panel;
+	private StartMenu menu;
 	
 	private boolean running = true;
-	private boolean startScreen = true;
 	private WumpusWorld world;
-	private WumpusWorld.Difficulty difficulty = Difficulty.easy;
 	private Player player;
 	
 	private ArrayList<GLPanel> gridPanels = new ArrayList<GLPanel>();
-	private int windowWidth = 600, windowHeight = 600;
+	private int windowWidth = 1600, windowHeight = 1600;
 	private float panelWidth, panelHeight;
 	
 	private static int boardSize = 5;
@@ -75,26 +75,51 @@ public class Game_Main {
 	 * Primary game loop that alternates between updating and rendering
 	 */
 	public void run() {
-		long startTime = System.nanoTime();
-		long elapsedTime = 0;
 		
 		//Display start/difficulty screen:
-		while(startScreen && running){
+		while(!menu.isStarted() && running){
 			Window.clear();
-			panel.Draw();
-			if(Mouse.getMouse(Mouse.LEFT_CLICK)){
+			menu.Draw();
+			if(Mouse.getMouse(Mouse.LEFT_CLICK)) { 
 				Vector2f screen = MousePos.getMousePosition();
 				Vector2f ndc = new Vector2f(screen.x / windowWidth * 2.0f - 1.0f, screen.y / windowHeight * -2.0f + 1.0f);
 				//System.out.println("" + ndc.x  + " , " + ndc.y);
-				panel.CheckClicked(ndc);
+				menu.CheckClicked(ndc);
 			}
 			Window.render();
 			checkClose();
 		}
 		
 		//Set game difficulty:
-		world = new WumpusWorld(difficulty);
+		world = new WumpusWorld(menu.getDifficulty());
 		player = new Player(world.getPlayerPosition().x, world.getPlayerPosition().y);
+		
+		if(menu.isMultiplayer()){
+			playMulti();
+		}
+		
+		else if(menu.getAiDifficulty() == AiDifficulty.none){
+			playSingle();
+		}
+		else {
+			playAi(menu.getAiDifficulty());
+		}
+		
+		//Cleanup resources:
+		deallocate();
+	}
+	
+	private void playAi(AiDifficulty diff){
+		System.out.println("Playing the AI");
+		//TODO
+	}
+	
+	private void playSingle(){
+		
+		System.out.println("Playing solo");
+		
+		long startTime = System.nanoTime();
+		long elapsedTime = 0;
 		
 		//Prevent player from moving while board is rendering
 		Mouse.buttons[0] = false;
@@ -111,14 +136,20 @@ public class Game_Main {
 			
 			render();
 		}
-		
-		//Cleanup resources:
-		
+	}
+	
+	private void playMulti(){
+		System.out.println("Playing multiplayer");
+		//TODO
+	}
+	
+	private void deallocate(){
+
 		for(GLPanel panel : gridPanels){
 			panel.Deallocate();
 		}
 		
-		panel.Deallocate();
+		menu.Deallocate();
 		
 		Window.dispose();
 	}
@@ -257,7 +288,7 @@ public class Game_Main {
 	 * Intuitive method to set running flag and enter run loop
 	 */
 	public void start() {
-		initStartScreen();
+		menu = new StartMenu();
 		//running = true;
 		run();
 	}
@@ -304,98 +335,4 @@ public class Game_Main {
 		panelHeight = windowHeight / dimension;
 	}
 	
-	private void initStartScreen(){
-		Window.clear();
-		 
-		panel = new GLPanel(2.0f, 2.0f, Orientation.vertical, .85f, .5f, .05f);
-		panel.SetTexture("res/sprites/difficultyTexture.jpg");
-		panel.Translate(new Vector3f(-1.0f, -1.0f, 0.0f));
-		
-		GLView startBtn = new GLView(.3f, .3f);
-		startBtn.SetTexture("res/sprites/start.PNG");
-		//startBtn.InitBuffers();
-		panel.AddView(startBtn);
-		startBtn.Translate(new Vector3f(-.15f, .2f, 0.0f));
-		startBtn.SetListener(new ClickListener(){
-
-			@Override
-			public void OnClick() {
-				//running = true;
-				startScreen = false;
-				System.out.println("start");
-			}
-			
-		});
-		
-		GLPanel difficultyPanel = new GLPanel(.85f, .4f, GLPanel.Orientation.horizontal, .05f, .05f, .05f);
-		difficultyPanel.SetTexture("res/sprites/difficultyTexture.jpg");
-		panel.AddView(difficultyPanel);
-		difficultyPanel.Translate(new Vector3f(-.4f, -.2f, 0.0f));
-		
-		final GLView easyBtn = new GLView(.2f, .2f);
-		final GLView mediumBtn = new GLView(.25f, .2f);
-		final GLView hardBtn = new GLView(.2f, .2f);
-		
-		final Texture easyUnselected = new Texture("res/sprites/easy.PNG");
-		final Texture mediumUnselected = new Texture("res/sprites/medium.PNG");
-		final Texture hardUnselected = new Texture("res/sprites/hard.PNG");
-		final Texture easySelected = new Texture("res/sprites/easySelected.PNG");
-		final Texture mediumSelected = new Texture("res/sprites/mediumSelected.png");
-		final Texture hardSelected = new Texture("res/sprites/hardSelected.PNG");
-		
-		easyBtn.SetTexture(easySelected);
-		mediumBtn.SetTexture(mediumUnselected);
-		hardBtn.SetTexture(hardUnselected);
-		
-		
-		difficultyPanel.AddView(easyBtn);
-		easyBtn.SetListener(new ClickListener(){
-
-			@Override
-			public void OnClick() {
-				difficulty = Difficulty.easy;
-				easyBtn.SetTexture(easySelected);
-				mediumBtn.SetTexture(mediumUnselected);
-				hardBtn.SetTexture(hardUnselected);
-				
-				//System.out.println("easy");
-			}
-			
-		});
-		
-		difficultyPanel.AddView(mediumBtn);
-		mediumBtn.SetListener(new ClickListener(){
-
-			@Override
-			public void OnClick() {
-				difficulty = Difficulty.medium;
-				easyBtn.SetTexture(easyUnselected);
-				mediumBtn.SetTexture(mediumSelected);
-				hardBtn.SetTexture(hardUnselected);
-				
-				//System.out.println("medium");
-			}
-			
-		});
-		
-		difficultyPanel.AddView(hardBtn);
-		hardBtn.SetListener(new ClickListener(){
-
-			@Override
-			public void OnClick() {
-				difficulty = Difficulty.hard;
-				easyBtn.SetTexture(easyUnselected);
-				mediumBtn.SetTexture(mediumUnselected);
-				hardBtn.SetTexture(hardSelected);
-				
-				
-				//System.out.println("hard");
-			}
-			
-		});
-		//difficultyPanel.InitBuffers();
-		panel.InitBuffers();
-		
-		Window.render();
-	}
 }
