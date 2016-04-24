@@ -103,6 +103,14 @@ public class Server_Listener extends Thread {
 			
 			if(!isCurrentTurn) {
 				sendMessage("WAIT");
+				
+				if (messageFromClient.equals("LOSE")) {
+					hasLost = true;
+					Server_Main.handleEndOfGame();
+				} else if (messageFromClient.equals("WIN")) {
+					hasWon = true;
+					Server_Main.handleEndOfGame();
+				}
 			}
 		}
 	}

@@ -48,11 +48,6 @@ public class Client_Listener extends Thread {
 	 * @param bool New status of turn
 	 */
 	public void setCurrentTurn(boolean bool) {
-		// if turn has ended
-		if(!bool) {
-			sendMessage("MOVED");
-		}
-		
 		isCurrentTurn = bool;
 	}
 	
@@ -66,10 +61,28 @@ public class Client_Listener extends Thread {
 	}
 	
 	/**
+	 * Send multiple messages to ensure delivery
+	 * @param msg Message to be sent
+	 */
+	public void sendTen(String msg) {
+		for (int i = 0; i < 10; i++) {
+			sendMessage(msg);
+		}
+	}
+	
+	/**
 	 * End this thread
 	 */
 	public void kill() {
 		running = false;
+	}
+	
+	/**
+	 * Get the status of this thread
+	 * @return True if running, false otherwise
+	 */
+	public boolean running() {
+		return running;
 	}
 
 	@Override

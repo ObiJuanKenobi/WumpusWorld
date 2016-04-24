@@ -98,6 +98,8 @@ public class Server_Main {
 		
 		client_1.kill();
 		client_2.kill();
+		client_1 = null;
+		client_2 = null;
 		
 	}
 	

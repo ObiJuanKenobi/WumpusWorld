@@ -144,16 +144,19 @@ public class Client_Main {
 			running = false;
 		}
 		
-		if (listener.isCurrentTurn()) {
-			System.out.println("It is your turn!");
-		} else {
-			System.out.println("Waiting on opponent...");
+		if (listener.running()) {
+			if (listener.isCurrentTurn()) {
+				System.out.println("It is your turn!");
+			} else {
+				System.out.println("Waiting on opponent...");
+			}
 		}
 		
 		listener.sendMessage("IDLE");
 		
 		if (Mouse.getMouse(Mouse.LEFT_CLICK) && listener.isCurrentTurn()) {
 			listener.setCurrentTurn(false);
+			listener.sendMessage("MOVED");
 			
 			// calculate tile of click
 			Vector2f mouse = MousePos.getMousePosition();
@@ -214,18 +217,18 @@ public class Client_Main {
 				
 				if (objective == Objectives.Gold) {
 					System.out.println("You have found the gold!");
-					listener.sendMessage("WIN");
-					//running = false;
+					listener.sendTen("WON");
+					running = false;
 				}
 				if (objective == Objectives.Pit) {
 					System.out.println("You fell into a pit and died!");
-					listener.sendMessage("LOSE");
-					//running = false;
+					listener.sendTen("LOSE");
+					running = false;
 				}
 				if (objective == Objectives.Wumpus) {
 					System.out.println("You have been eaten by the Wumpus!");
-					listener.sendMessage("LOSE");
-					//running = false;
+					listener.sendTen("LOSE");
+					running = false;
 				}
 				
 				currentPanel.AddView(new GLIcon(.8f * gridPanels.get(panelIndex).GetWidth(), .8f * gridPanels.get(panelIndex).GetHeight(), objective));
