@@ -45,6 +45,19 @@ public class WumpusWorld {
 
 		isGameOver = false;
 	}
+	
+	//Creates another world object with the same map
+	public static WumpusWorld copy(WumpusWorld world){
+		WumpusWorld copy = new WumpusWorld(world.difficulty);
+		
+		for(int i=0; i<copy.mapSize; i++){
+			for(int j=0; j<copy.mapSize; j++){
+				copy.map[i][j] = world.getTile(i, j);
+			}
+		}
+		
+		return copy;
+	}
 
 	/**
 	 * Returns a Tile at the specified position

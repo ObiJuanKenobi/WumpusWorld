@@ -1,30 +1,26 @@
 import java.util.ArrayList;
 import java.util.Collection;
 
-import javax.swing.JButton;
-
 import org.lwjgl.opengl.GL11;
 
+import AI.AI;
 import AI.AI.AiDifficulty;
+import AI.GlobalAI;
+import AI.GlobalDfsAI;
+import AI.GreedyAI;
 import graphics.GLIcon;
 import graphics.GLPanel;
-import graphics.GLView;
-import graphics.GLView.ClickListener;
 import graphics.Mouse;
 import graphics.MousePos;
 import graphics.Player;
 import graphics.Shader;
 import graphics.StartMenu;
-import graphics.Texture;
 import graphics.Window;
-import graphics.GLPanel.Orientation;
 import logic.Objectives;
 import logic.Percepts;
 import logic.WumpusWorld;
-import logic.WumpusWorld.Difficulty;
 import math.Vector2f;
 import math.Vector3f;
-import math.Vector4f;
 
 /**
  * Main runnable class for Wumpus World
@@ -111,7 +107,76 @@ public class Game_Main {
 	
 	private void playAi(AiDifficulty diff){
 		System.out.println("Playing the AI");
-		//TODO
+		WumpusWorld aiWorld = WumpusWorld.copy(world);
+		AI ai = null;
+		switch(diff){
+			case easy:
+				ai = new GreedyAI(aiWorld);
+				break;
+				
+			case medium:
+				ai = new GlobalAI(aiWorld);
+				break;
+				
+			case hard:
+				ai = new GlobalDfsAI(aiWorld);
+				break;
+			
+			default:
+				//only those options should be possible
+				break;
+		}
+		
+		//Alternate turns between AI and user:
+		long startTime = System.nanoTime();
+		long elapsedTime = 0;
+		
+		//Prevent player from moving while board is rendering
+		Mouse.buttons[0] = false;
+
+		//Begin game:
+		while(running && !world.isGameOver() && !aiWorld.isGameOver()) {
+			elapsedTime = System.nanoTime() - startTime;
+			
+			if (elapsedTime >= UPDATE_TIME_NS) {
+				startTime = System.nanoTime();
+				elapsedTime = 0;
+				
+				//player's turn:
+				while(!update())
+					render(); //wait for update to return true, means user clicked
+				
+				//AI's turn:
+				ai.makeMove();
+			}
+			
+			render();
+		}
+		
+		if(aiWorld.isGameOver()){
+			if(!aiWorld.haveWon() && !world.isGameOver()){
+				//both games over, neither won, tie:
+				System.out.println("You beat the AI");
+			}
+			else if(!aiWorld.haveWon()){
+				System.out.println("You tied the AI!");
+			}
+			else if(aiWorld.haveWon() && !world.haveWon()){
+				System.out.println("The AI has won");
+			}
+			else {
+				System.out.println("You tied the AI");
+			}
+		}
+		else if (world.isGameOver()){
+			if(world.haveWon()){
+				System.out.println("You beat the AI");
+			}
+			else {
+				System.out.println("The AI has won");
+			}
+		}
+		
 	}
 	
 	private void playSingle(){
@@ -160,15 +225,19 @@ public class Game_Main {
 		}
 	}
 	
+	
 	/**
-	 * Handles user input and updates game logic
+	 * Returns true if player moved/changed orientation
+	 * @return
 	 */
-	public void update() {
+	public boolean update() {
+		boolean moved = false;
 		if (Window.isCloseRequested()) {
 			running = false;
 		}
 		
 		if (Mouse.getMouse(Mouse.LEFT_CLICK)) {
+			moved = true;
 			
 			// calculate tile of click
 			Vector2f mouse = MousePos.getMousePosition();
@@ -261,6 +330,8 @@ public class Game_Main {
 				}
 			}
 		}
+		
+		return moved;
 		
 	}
 	
