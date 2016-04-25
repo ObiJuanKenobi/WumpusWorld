@@ -15,8 +15,8 @@ public class StartMenu {
 	private boolean started = false;
 	private WumpusWorld.Difficulty difficulty = Difficulty.easy;
 	private AiDifficulty aiDifficulty = AiDifficulty.none;
-	private boolean multiplayer = false;
 	
+	final Texture menuTexture = new Texture("res/sprites/menuBg.jpg");
 	final Texture easyUnselected = new Texture("res/sprites/easy.PNG");
 	final Texture mediumUnselected = new Texture("res/sprites/medium.PNG");
 	final Texture hardUnselected = new Texture("res/sprites/hard.PNG");
@@ -60,15 +60,11 @@ public class StartMenu {
 		return aiDifficulty;
 	}
 	
-	public boolean isMultiplayer(){
-		return multiplayer;
-	}
-	
 	private void init(){
 		Window.clear();
 		
-		panel = new GLPanel(2.0f, 2.0f, Orientation.vertical, .05f, .45f, .05f);
-		panel.SetTexture("res/sprites/difficultyTexture.jpg");
+		panel = new GLPanel(2.0f, 2.0f, Orientation.vertical, .05f, .65f, .05f);
+		panel.SetTexture(menuTexture);
 		panel.Translate(new Vector3f(-1.0f, -1.0f, 0.0f));
 		
 		initStartBtn();
@@ -77,16 +73,6 @@ public class StartMenu {
 		
 		initAiPanel();
 		
-		GLPanel multiplayerPanel = new GLPanel(2f, .4f, GLPanel.Orientation.horizontal, .0f, .0f, .025f);
-		multiplayerPanel.SetTexture("res/sprites/difficultyTexture.jpg");
-		//difficultyPanel.Translate(new Vector3f(-.9f, -.2f, 0.0f));
-		panel.AddView(multiplayerPanel);
-		
-		final GLView multiplayerLabel = new GLView(.60f, .20f);
-		multiplayerLabel.SetTexture(new Texture("res/sprites/multiplayer.PNG"));
-		multiplayerPanel.AddView(multiplayerLabel);
-		
-		
 		//difficultyPanel.InitBuffers();
 		panel.InitBuffers();
 		
@@ -94,9 +80,9 @@ public class StartMenu {
 	}
 	
 	private void initStartBtn(){
-		startBtn = new GLView(.4f, .3f);
+		startBtn = new GLView(.5f, .4f);
 		startBtn.SetTexture("res/sprites/start.PNG");
-		startBtn.Translate(new Vector3f(-.15f, 0.65f, 0.0f));
+		startBtn.Translate(new Vector3f(-.25f, 0.45f, 0.0f));
 		startBtn.InitBuffers();
 		startBtn.SetListener(new ClickListener(){
 
@@ -111,8 +97,8 @@ public class StartMenu {
 	}
 	
 	private void initDifficultyPanel(){
-		GLPanel difficultyPanel = new GLPanel(2f, .4f, GLPanel.Orientation.horizontal, .0f, .0f, .025f);
-		difficultyPanel.SetTexture("res/sprites/difficultyTexture.jpg");
+		GLPanel difficultyPanel = new GLPanel(2f, .3f, GLPanel.Orientation.horizontal, .0f, .0f, .025f);
+		difficultyPanel.SetTexture(menuTexture);
 		//difficultyPanel.Translate(new Vector3f(-.9f, -.2f, 0.0f));
 		panel.AddView(difficultyPanel);
 		
@@ -177,8 +163,8 @@ public class StartMenu {
 	}
 	
 	private void initAiPanel(){
-		GLPanel aiPanel = new GLPanel(2f, .4f, GLPanel.Orientation.horizontal, .0f, .0f, .025f);
-		aiPanel.SetTexture("res/sprites/difficultyTexture.jpg");
+		GLPanel aiPanel = new GLPanel(2f, .3f, GLPanel.Orientation.horizontal, .0f, .0f, .025f);
+		aiPanel.SetTexture(menuTexture);
 		//difficultyPanel.Translate(new Vector3f(-.9f, -.2f, 0.0f));
 		panel.AddView(aiPanel);
 		

@@ -90,11 +90,7 @@ public class Game_Main {
 		world = new WumpusWorld(menu.getDifficulty());
 		player = new Player(world.getPlayerPosition().x, world.getPlayerPosition().y);
 		
-		if(menu.isMultiplayer()){
-			playMulti();
-		}
-		
-		else if(menu.getAiDifficulty() == AiDifficulty.none){
+		if(menu.getAiDifficulty() == AiDifficulty.none){
 			playSingle();
 		}
 		else {
