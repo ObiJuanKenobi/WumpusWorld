@@ -44,15 +44,13 @@ public class GlobalAI extends AI {
 
     public GlobalAI(WumpusWorld world) {
         super(world);
+        currentNode = new GraphNode(currentX, currentY);
+    	addNodeToGraph(currentNode);
     }
 
     public boolean play(){
 
-    	currentNode = new GraphNode(currentX, currentY);
-    	addNodeToGraph(currentNode);
-
         while (!wumpusWorld.haveWon() && !wumpusWorld.isGameOver()) {
-        	
         	makeMove();
         }
         
